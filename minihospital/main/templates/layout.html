@@ -1,0 +1,72 @@
+{% load static tailwind_tags %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+<body>
+
+    {% block nav %}
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div>
+                    <img src="{% static 'image/home.png' %}" width="22" height="22">
+                    <a href="{% url 'home' %}" class="text-gray-800 hover:text-teal-500">หน้าแรก</a>
+                </div>
+
+                <div>
+                    <img src="{% static 'image/doctor.png' %}" width="22" height="22">
+                    <a href="#" class="text-gray-800 hover:text-teal-500">ค้นหาแพทย์</a>
+                </div>
+
+                <div>
+                    <img src="{% static 'image/schedule.png' %}" width="22" height="22">
+                    <a href="#" class="text-gray-800 hover:text-teal-500">คิวพบแพทย์</a>
+                </div>
+
+                <div>
+                    <img src="{% static 'image/plus.png' %}" width="22" height="22">
+                    <a href="{% url 'contact' %}" class="text-gray-800 hover:text-teal-500">ติดต่อเรา</a>
+                </div>
+            </div>
+            <button class="text-white text-base font-normal font-['Kanit'] px-4 py-2 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:bg-teal-600">คุณ นภัสรัชต์</button>
+        </div>
+    </nav>
+    {% endblock %}
+
+    {% block head %}
+    {% endblock %}
+    
+    {% block content %}
+    {% endblock %}
+
+    <div class="w-[1440px] h-[1566px] bg-red">
+        <div class="w-[172px] h-[50px] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-full justify-center">
+            <div class="text-white text-base font-normal font-['Kanit']">คุณ ณัฏฐณิชา</div>
+        </div>
+        <div class="left-[1300px] top-[42px] absolute text-white text-base font-normal font-['Kanit']">คุณ ณัฏฐณิชา </div>
+        <img class="w-[22px] h-[22px] left-[846px] top-[43px] absolute" src="https://via.placeholder.com/22x22" />
+        <img class="w-[22px] h-[22px] left-[747px] top-[42px] absolute" src="https://via.placeholder.com/22x22" />
+        <div class="left-[1130px] top-[44px] absolute">
+          <div class="left-[25px] top-0 absolute text-[#494949] text-base font-normal font-['Kanit']">ติดต่อเรา</div>
+          <img class="w-[22px] h-[22px] left-0 top-[23px] absolute" src="https://via.placeholder.com/22x22" />
+        </div>
+        <div class="left-[873px] top-[44px] absolute text-[#494949] text-base font-normal font-['Kanit']">ค้นหาแพทย์</div>
+        <div class="left-[774px] top-[43px] absolute text-[#494949] text-base font-normal font-['Kanit']">หน้าแรก</div>
+        <div class="left-[987px] top-[43px] absolute">
+          <div class="left-[26px] top-0 absolute text-[#494949] text-base font-normal font-['Kanit']">คิวพบแพทย์</div>
+          <img class="w-[22px] h-[22px] left-0 top-[1px] absolute" src="https://via.placeholder.com/22x22" />
+        </div>
+    </div>
+
+</body>
+{% if settings.DEBUG %}
+<script src="http://localhost:8000/__reload__/reload.js"></script>
+{% endif %}
+</html>
