@@ -5,5 +5,14 @@
 {% endblock %}
 
 {% block content %}
-    <h1>คิวพบแพทย์</h1>
+<div class="flex justify-between items-center bg-yellow-500">
+    <div class="flex justify-center items-end space-x-10 border border-black">
+        <p class="text-[48px] font-semibold text-[#3E5279] bg-pink-500">คิวพบแพทย์</p>
+        <p class="text-[20px] text-[#494949] bg-green-500 mb-[10px] ">วันที่ xx/xx/xxxx</p>
+    </div>
+    <div class="flex border border-black">
+        <input type="text" class="text-[16px] w-[300px] rounded-full bg-[#EFEFEF] px-5 py-3" placeholder="ค้นหา">
+        <button>ค้นหา</button>
+    </div>
+</div>
 {% endblock %}
