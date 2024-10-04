@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let texts = document.querySelectorAll(".nav-text");
     let bg = document.querySelector(".nav-bg");
     let icons = document.querySelectorAll(".nav-icon");
+    let head = document.querySelector(".head");
 
     if (currentPath.includes("home") || currentPath.includes("contact")) {
         texts.forEach(text => {
@@ -11,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         bg.classList.remove('bg-white')
         bg.classList.remove('shadow-md')
+
+        head.classList.remove('pt-[73px]')
 
     }
     else {
