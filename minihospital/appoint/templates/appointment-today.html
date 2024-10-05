@@ -1,18 +1,65 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %}
     appointment today
 {% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center bg-yellow-500">
-    <div class="flex justify-center items-end space-x-10 border border-black">
-        <p class="text-[48px] font-semibold text-[#3E5279] bg-pink-500">คิวพบแพทย์</p>
-        <p class="text-[20px] text-[#494949] bg-green-500 mb-[10px] ">วันที่ xx/xx/xxxx</p>
+<div class="container-full flex flex-col justify-center items-center">
+
+    <div class="container p-10 flex justify-between items-center">
+        <div class="flex justify-center items-end space-x-10">
+            <p class="text-[48px] font-semibold text-[#3E5279]">คิวพบแพทย์</p>
+            <p class="text-[20px] text-[#494949] mb-[10px] ">วันที่ xx/xx/xxxx</p>
+        </div>
+        <div class="flex">
+            <input type="text" class="text-[16px] w-[300px] rounded-full bg-[#EFEFEF] px-5 py-3" placeholder="ค้นหา">
+            <button>ค้นหา</button>
+        </div>
     </div>
-    <div class="flex border border-black">
-        <input type="text" class="text-[16px] w-[300px] rounded-full bg-[#EFEFEF] px-5 py-3" placeholder="ค้นหา">
-        <button>ค้นหา</button>
+
+    <div>
+        
+    </div>
+
+    <div class="container">
+        <div class="mt-6 grid grid-cols-3 gap-6">
+            <!-- Doctor card (repeat this block for each doctor card) -->
+            {% for i in doctor_list %}
+            <div class="relative w-[408px] h-[278px] bg-white rounded-[20px] shadow-md">
+                <img class="absolute w-[203px] h-[203px]" src="{% static 'image/doctor1.png' %}" />
+                <div class="text-center text-[#3d5279] text-xl font-medium font-['Kanit'] leading-[55px]">นพ. มิจิ จามจาม</div>
+                <div class="text-center text-[#494949] text-base font-normal font-['Kanit'] leading-[55px]">พุธ - ศุกร์</div>
+                <div class="text-center text-[#494949] text-lg font-normal font-['Kanit'] leading-[55px]">10:00 - 16:00 น.</div>
+
+                <div class="w-[76px] h-[29px] bg-[#6ed554] rounded-[50px]">
+                    <div class="text-center text-white text-base font-normal font-['Kanit'] leading-[55px]">ว่าง</div>
+                </div>
+
+                <div class="w-[372px] h-[55px]">
+                  <div class="w-[372px] h-[50px] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px]"></div>
+                  <div class="w-[133px] h-[55px] text-center text-white text-xl font-medium font-['Kanit'] leading-[55px]">จองคิวพบแพทย์</div>
+                </div>
+                <div class="text-center text-[#c7c7c7] text-base font-normal font-['Kanit'] leading-[55px]">สถานะ :</div>
+                <div class="w-[125px] h-[66.68px]">
+                  <div class="w-[125px] h-[33px] bg-[#d2e0ff] rounded-[30px]"></div>
+                  <div class="w-[89.58px] h-[66.68px] text-center text-[#6986c4] text-base font-normal font-['Kanit'] leading-[55px]">ตา หู คอ จมูก </div>
+                </div>
+            </div>
+            {% comment %} <div class="bg-white p-4 rounded shadow">
+                <img src="{% static 'image/doctor1.png' %}" alt="Doctor" class="w-full h-40 object-cover rounded mb-4">
+                <h2 class="text-xl font-bold">นพ. มิธี จานาบาน</h2>
+                <p class="text-gray-600">ตา หู คอ จมูก</p>
+                <p class="text-gray-500">10:00 - 16:00 น. | พุธ - ศุกร์</p>
+                <div class="mt-4 flex justify-between items-center">
+                    <span class="text-green-500">ว่าง</span>
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded">จองคิวแพทย์</button>
+                </div>
+            </div> {% endcomment %}
+            {% endfor %}
+        </div>
+
     </div>
 </div>
 {% endblock %}
