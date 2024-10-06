@@ -38,3 +38,4 @@ const count = 6;
         bg.classList.add('bg-white');
         bg.classList.add('text-[#494949]');
     });
+
