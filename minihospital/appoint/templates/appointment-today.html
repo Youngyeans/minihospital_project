@@ -8,27 +8,67 @@
 {% block content %}
 <div class="container-full flex flex-col justify-center items-center">
 
-    <div class="container p-10 flex justify-between items-center">
+    <div class="container pl-10 pt-10 flex justify-between items-center">
         <div class="flex justify-center items-end space-x-10">
             <p class="text-[48px] font-semibold text-[#3E5279]">คิวพบแพทย์</p>
-            <p class="text-[20px] text-[#494949] mb-[10px] ">วันที่ xx/xx/xxxx</p>
+            <p class="text-[20px] text-[#494949] mb-[10px] ">วันที่ {{ today|date:"d/m/Y" }}</p>
         </div>
-        <div class="flex">
-            <input type="text" class="text-[16px] w-[300px] rounded-full bg-[#EFEFEF] px-5 py-3" placeholder="ค้นหา">
-            <button>ค้นหา</button>
+        <div class="flex space-x-5 justify-center items-center">
+            <div class="relative w-[400px]">
+                <input type="text" class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" placeholder="ค้นหา">
+                <img src="{% static 'image/magnifying-glass.png' %}" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-5 h-5">
+            </div>
+            <div id="search1" class="hover:from-[#15CDCB] hover:to-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] flex justify-center rounded-full items-center w-[100px] h-[35px] p-[2px]">
+                <button id="search2" class="text-[#494949]duration-300 transition ease-in-out delay-150 w-full h-full flex flex justify-center items-center bg-white px-7 py-2 text-center rounded-full text-[#494949] text-[16px]">ค้นหา</button>
+            </div>
         </div>
     </div>
 
-    <div>
-        
+    <div class="container flex flex-col px-10 py-5">
+        <p class="text-[#909090]">รายชื่อแพทย์ที่ประจำการอยู่ ณ ตอนนี้</p>
+        <div class="flex space-x-5 py-4">
+            <div class="hover:scale-110 hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#15CDCB] rounded-[50px] inline-flex items-center px-5 py-2 cursor-pointer ">
+                <div class="text-center text-white text-base font-normal">ทั้งหมด</div>
+            </div>
+
+            <div id="cat1" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img1" src="{% static 'image/bone.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">กระดูก</div>
+            </div>
+
+            <div id="cat2" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img2" src="{% static 'image/baby-boy.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">เด็ก</div>
+            </div>
+
+            <div id="cat3" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img3" src="{% static 'image/visible.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ตา หู คอ จมูก</div>
+            </div>
+
+            <div id="cat4" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img4" src="{% static 'image/hand.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ผิวหนัง</div>
+            </div>
+
+            <div id="cat5" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img5" src="{% static 'image/stethoscope.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">โรคทั่วไป</div>
+            </div>
+
+            <div id="cat6" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img6" src="{% static 'image/female.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ผู้หญิง</div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="mt-6 grid grid-cols-3 gap-6 border border-black">
+    <div class="w-full flex justify-center items-center">
+        <div class="mt-6 grid grid-cols-3 grid-rows-3 gap-10">
             <!-- Doctor card (repeat this block for each doctor card) -->
             {% for i in doctor_list %}
-            <div class="relative w-[408px] h-auto bg-white rounded-[20px] shadow-md border border-black flex flex-col justify-between p-5">
-                <img class="absolute -top-[30px] left-[0px]" width="203" height="203" src="{% static 'image/doctor1.png' %}" />
+            <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 shadow-box relative w-[408px] h-auto bg-white rounded-[20px] flex flex-col justify-between p-5">
+                <img class="absolute -top-[15px] left-[0px]" width="203" height="203" src="{% static 'image/doctor1.png' %}" />
 
                 <div class="flex">
                     <!-- ปรับขนาดของ img โดยตั้ง width ตายตัว -->
@@ -40,17 +80,15 @@
                         <div class="text-left text-[#3d5279] text-xl font-semibold">นพ. มิจิ จามจาม</div>
                         
                         <!-- ปรับขนาดของ 'ตา หู คอ จมูก' และชิดซ้าย -->
-                        <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-6 inline-block">
+                        <div class="bg-[#d2e0ff] rounded-[30px] mt-3 mb-4 text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
                             ตา หู คอ จมูก
                         </div>
                         
-                        <div class="text-left text-[#494949] text-base font-normal">พุธ - ศุกร์</div>
-                        <div class="text-left text-[#494949] text-lg font-normal">10:00 - 16:00 น.</div>
-                        <div class="text-left text-[#c7c7c7] text-base font-normal inline-block">สถานะ :</div>
-                        
-                        <!-- ปุ่มว่าง (ไม่ต้องชิดซ้ายเพราะต้องการให้ตรงกลาง) -->
-                        <div class="w-[76px] h-[29px] bg-[#6ed554] rounded-[50px] text-center text-white text-base font-normal">
-                            ว่าง
+                        <div class="text-left text-[#494949] text-[18px] font-normal leading-tight">10:00 - 16:00 น.</div>
+                        <div class="text-left text-[#494949] text-[16px] font-normal leading-tight">พุธ - ศุกร์</div>
+                        <div class="flex items-center mt-3 space-x-4">
+                            <div class="text-left text-[#c7c7c7] text-base font-normal">สถานะ :</div>
+                            <div class="bg-[#6ed554] px-5 py-1 rounded-[50px] text-center text-white text-base font-normal">ว่าง</div>
                         </div>
                     </div>
                     
@@ -58,8 +96,8 @@
                 
             
                 <!-- Button goes here, placed in a separate block under the details -->
-                <div class="w-full mt-4">
-                    <button class="w-full h-[50px] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium">
+                <div class="w-full mt-4 flex justify-center">
+                    <button class="hover:from-[#15CDCB] hover:to-[#15CDCB] cursor-pointer duration-300 transition ease-in-out delay-150 w-[90%] h-[50px] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium">
                         จองคิวพบแพทย์
                     </button>
                 </div>
@@ -80,4 +118,6 @@
 
     </div>
 </div>
+
+<script src="{% static 'js/categories.js' %}"></script>
 {% endblock %}
