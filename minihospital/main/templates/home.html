@@ -1,9 +1,447 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %}
     home
 {% endblock %}
+{% block head %}
+<style>
+    body{
+        font-family: "Kanit", sans-serif;
+        font-size: 16px;
+    }
+    /* Fullscreen height */
+    html, body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Kanit', sans-serif;
+    }
 
+    /* Background image settings */
+    /* body {
+        background-image: url("{% static 'image/hospital-hallway-with-motion-effect 1.png'%}"); /* Replace with your image URL */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+    } */
+
+    /* Gradient overlay at the bottom covering 50% of the screen */
+    .gradient-overlay {
+        position: absolute;
+        bottom: -60px;
+        left: 0;
+        right: 0;
+        height: 50%; /* 50% height of the screen */
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0), /* White at 100% opacity */
+            rgba(255, 255, 255, 1)  /* White at 0% opacity */
+        );
+    }
+
+    .boxbox{
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.76);
+        box-shadow: 0px 4px 10.9px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    .hope{
+        color: #15CDCB;
+    }
+
+    .personal{
+    color: #3E5279;
+    }
+
+    .care{
+        font-size: 32px;
+        color: #494949;
+    }
+
+    .para{
+        color: #777676;
+    }
+
+    .edit{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .edit:hover{
+        transform: scale(0.95);
+    }
+
+    .edit2{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        font-size: 20px;
+    }
+
+    .edit2:hover, .edit3:hover{
+        transform: scale(0.95);
+    }
+
+    .edit3{
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        font-size: 20px;
+        background-color: white;
+    }
+
+    .cancel{
+        color: #494949;
+        border-radius: 50px;
+        border: 1px solid var(--Linear, #5280E2);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .cancel:hover{
+        transform: scale(0.95);
+    }
+
+    .heart{
+        transform: rotate(8.158deg);
+    }
+
+    .bone{
+        transform: rotate(-90.274deg);
+    }
+
+
+    .hospital{
+        color:  #909090;
+    }
+
+    .hopelife{
+        color: #8BCDCB;
+    }
+
+    .bluebox{
+        border-radius: 30px;
+        background: #E1F6F5;    
+    }
+
+    .taotao{
+        color: #494949;
+    }
+
+    .pic{
+        border-radius: 30px;
+        width: 557px;
+        height: 426px;
+    }
+
+    .first{
+        transform: rotate(-7.636deg);
+    }
+
+    .whitebox{
+        background: white;
+        border-radius: 30px;
+    }
+
+    .whitebox:hover, .bluebox2:hover{
+        transform: scale(0.99);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+    .bluebox2{
+        border-radius: 30px 30px 0px 0px;
+        background: #E1F6F5;
+    }
+
+    .heart2{
+        transform: rotate(17.342deg);
+    }
+
+    .depa:hover{
+        transform: scale(0.99);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        text-decoration-line: underline;
+    }
+
+    .bigbox{
+        width: 1145px;
+        height: 412.5px;
+        border-radius: 30px;
+        background: var(--Linear, linear-gradient(90deg, #5280E2 0%, #15CDCB 100%));
+    }
+
+    .rere{
+        border-radius: 0px 30px 30px 0px;
+    }
+
+    .jong{
+        color: #5280E2;
+    }
+
+    /* .last{
+        margin-top: 1000px;
+    } */
+</style>
+{% endblock %}
+    
 {% block content %}
-    <h1 class="bg-pink-500">Home9</h1>
+
+    <div class="w-full relative">
+        <img src="{% static 'image/Group 85.png' %}" class="w-full h-auto">
+        <div class="container mx-auto mt-24 fade-in absolute left-24 top-16">
+            <div class="boxbox p-12 w-fit relative">
+                <img src="{% static 'image/Heart Care.png'%}" class="absolute w-60 -top-16 -right-24 heart">
+                <img src="{% static 'image/Bone Cancer.png'%}" class="absolute w-48 -bottom-10 -left-16 bone">
+                <div class="flex space-x-4">
+                    <h1 class="underline text-5xl font-semibold hope">HOPELIFE</h1>
+                    <h1 class="text-5xl font-semibold personal">HOSPITAL</h1>
+                </div>
+                <h1 class="care">เพราะเรา "แคร์" คุณ</h1>
+                <p class="para mt-8">ที่ HopeLife Hospital เราให้ความสำคัญกับคุณภาพการดูแลรักษาสุขภาพ<br>
+                    และความพึงพอใจของผู้ป่วยเป็นอันดับหนึ่งด้วยทีมแพทย์ผู้เชี่ยวชาญและ<br>
+                    บุคลากรทางการแพทย์ที่พร้อมให้บริการคุณอย่างเต็มที่ 
+                </p>
+                <div class="flex pl-24 pt-10 space-x-5">
+                    <a href="{% url 'appoint:doctor-list' %}">
+                        <button class="text-2xl cancel py-3 px-12 rounded-full inline-flex items-center">
+                            <span>ค้นหาแพทย์</span>
+                        </button>
+                    </a>
+                    <a href="{% url 'appoint:appoint-today' %}">
+                        <button class="text-2xl edit text-white py-3 px-10 rounded-full inline-flex items-center">
+                            <span>จองคิวพบแพทย์</span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container w-full px-24 mt-36 mx-auto fade-in">
+        <div class="flex">
+            <h1 class="personal text-5xl font-medium mb-8">ยินดีต้อนรับสู่</h1>
+            <div class="flex text-2xl mt-4 ml-4">
+                <p class="hospital mr-2">โรงพยาบาล</p>
+                <p class="hopelife">โฮปไลฟ์</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container w-full px-24 py-4 mx-auto flex justify-between gap-12">
+        <!-- กล่องด้านซ้าย -->
+        <div class="w-1/2">
+            <!-- กล่องที่ 1 -->
+            <div class="bluebox p-10 mt-12">
+                <p class="taotao leading-8">
+                    ไม่ว่าคุณจะต้องการคำปรึกษาทางการแพทย์ การตรวจวินิจฉัย การรักษา<br>
+                    หรือการฟื้นฟูสุขภาพ เราพร้อมให้บริการด้วยความใส่ใจและมาตรฐานการแพทย์ที่ดีที่สุด<br>
+                    เพื่อให้คุณมั่นใจได้ว่า iCare Hospital คือโรงพยาบาลที่คุณสามารถไว้วางใจได้
+                </p>
+            </div>
+            <!-- กล่องที่ 2 พร้อมรูปภาพ -->
+            <div class="pl-8 h-fit">
+                <div class="flex items-center">
+                    <!-- รูปภาพในกล่องที่ 2 -->
+                    <img src="{% static 'image/First aid.png'%}" alt="Image" class="mr-8 w-72 h-72 first">
+                    <!-- ข้อความในกล่องที่ 2 -->
+                    <p class="taotao leading-8">
+                        เพราะเราเข้าใจและใส่ใจในสุขภาพของคุณ HopeLife Hospital<br>
+                        ยินดีที่จะอยู่เคียงข้างและเป็นส่วนหนึ่ง<br>
+                        ในการดูแลสุขภาพของคุณและคนที่คุณรักเสมอ
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- รูปภาพด้านขวา -->
+        <div class="w-1/2 flex justify-end items-start relative">
+            <img src="{% static 'image/Doctor Consultation.png'%}" width="378" height="378" class="absolute -bottom-4 -left-10">
+            <img src="{% static 'image/docimage22.jpg'%}" alt="Hospital Image" class="pic">
+        </div>
+    </div>
+
+    <div class="container w-full mx-auto mt-56 px-24">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="personal text-5xl font-medium mb-2">บริการของเรา</h1>
+                <p class="hospital">บริการคุณภาพ จากแพทย์ผู้เชี่ยวชาญ</p>
+            </div>
+            <div>
+                <a href="{% url 'appoint:appoint-today' %}">
+                    <button class="edit2 text-white py-3 px-10 rounded-full inline-flex items-center">
+                        <span>จองคิวพบแพทย์</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container px-24 py-16 mx-auto grid grid-cols-3 gap-20">
+        <!-- กล่องที่ 1 -->
+        <div class="relative w-full">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">กระดูก (ออร์โธปิดิกส์)</p>
+                <p class="hospital pl-8">รักษาโรคเกี่ยวกับกระดูก ข้อต่อ และกล้ามเนื้อ เช่น<br>
+                    การรักษาอาการกระดูกหัก, ผ่าตัดเปลี่ยนข้อเข่า,<br>
+                    การรักษาอาการปวดหลังและบำบัดการเคลื่อนไหว</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3 depa">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/x-rays.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+            </div>
+        </div>
+
+        <!-- กล่องที่ 2 -->
+        <div class="relative w-full">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">เด็ก (กุมารเวช)</p>
+                <p class="hospital pl-8">ดูแลและรักษาโรคในเด็กตั้งแต่แรกเกิดจนถึง<br>
+                    วัยรุ่น รวมถึงการฉีดวัคซีน พัฒนาการของเด็ก<br>
+                    และการรักษาโรคเฉพาะทางในเด็ก</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3 depa">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/baby-girl.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+                <img src="{% static 'image/heart (1).png'%}" class="absolute top-8 right-32 heart2 w-10" alt="">
+            </div>
+        </div>
+
+        <!-- กล่องที่ 3 -->
+        <div class="relative w-full">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">ตา หู คอ จมูก</p>
+                <p class="hospital pl-8">ตรวจวินิจฉัยและรักษาโรคเกี่ยวกับตา หู, คอ และจมูก<br>
+                    เช่น โรคไซนัส, การติดเชื้อในหู,<br>
+                    โรคเส้นเสียง, อาการหูอื้อ และโรคต้อกระจก</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3 depa">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/ear.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+            </div>
+        </div>
+
+        <!-- กล่องที่ 4 -->
+        <div class="relative w-full mt-44">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">ผิวหนัง</p>
+                <p class="hospital pl-8">ตรวจและรักษาโรคเกี่ยวกับผิวหนัง, ผม, เล็บ<br>
+                    และเยื่อบุ เช่น โรคผื่นคัน, สิว, สะเก็ดเงิน<br>
+                    และการตรวจมะเร็งผิวหนัง</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3 depa">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/epidermis.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+            </div>
+        </div>
+
+        <!-- กล่องที่ 6 -->
+        <div class="relative w-full mt-44">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">โรคทั่วไป (อายุรกรรม)</p>
+                <p class="hospital pl-8">ทำการตรวจและรักษาโรคทั่วไปที่ไม่ต้องผ่าตัด เช่น<br>
+                    โรคเบาหวาน, โรคความดันโลหิตสูง, โรคหัวใจ,<br>
+                    โรคทางเดินหายใจ และโรคติดเชื้อ</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3 depa">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/medical-kit.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+            </div>
+        </div>
+
+        <!-- กล่องที่ 6 -->
+        <div class="relative w-full mt-44">
+            <!-- back -->
+            <div class="whitebox w-full h-96 absolute top-0 left-0">
+                <p class="personal text-2xl font-semibold pt-52 pl-8 mb-3">ผู้หญิง (สูตินรีเวช)</p>
+                <p class="hospital pl-8">ให้บริการดูแลสุขภาพสำหรับสตรีตั้งแต่การ ตั้งครรภ์,<br>
+                    รวมถึงการตรวจโรคทางนรีเวช และการรักษาโรค<br>ทางสตรี</p>
+                <a href="">
+                    <p class="underline hope pl-8 mt-3">แพทย์ประจำแผนก</p>
+                </a>
+            </div>
+            <!-- front -->
+            <div class="bluebox2 w-full h-48 relative mx-auto flex justify-center items-center">
+                <img src="{% static 'image/uterus.png'%}" alt="Image" class="w-32 h-32 object-cover ">
+            </div>
+        </div>
+    </div>
+        
+        <div class="container mx-auto mt-24 flex justify-center items-center h-screen w-screen">
+            <div class="bigbox">
+                <div class="flex justify-between items-center relative">
+                    <div class="">
+                        <h1 class="text-white text-4xl font-medium mb-10 pl-16">จองคิวพบแพทย์<br>ผ่านช่องทางออนไลน์ วัน</h1>
+                        <a href="{% url 'appoint:appoint-today' %}">
+                            <button class="ml-16 edit3 text-white text-2xl font-medium py-3 px-10 rounded-full inline-flex items-center">
+                                <span class="jong">จองคิวพบแพทย์</span>
+                            </button>
+                        </a>
+                        <img src="{% static 'image/buy1.png'%}" class="w-96 absolute top-8 right-80">
+                    </div>
+                    <div>
+                        <img src="{% static 'image/docimage3.jpg'%}" class="w-96 rere">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto">
+            <div class="flex justify-center px-24 space-x-48 items-center"> <!-- Center the entire column -->
+                <!-- ข้อความที่อยู่ -->
+                <div class="">
+                    <p class="personal text-2xl font-medium">ที่อยู่ และ ช่องทางติดต่อ</p>
+                    
+                    <div class="flex items-start w-full"> <!-- Center the inner flex container -->
+                        <div class="flex space-x-24 mt-12">
+
+                            <div class="flex">
+                                 <img src="{% static 'image/location.png'%}" class="w-10 h-10 mr-4" alt="">
+                                 <p class="hospital">2 ซ.ศูนย์วิจัย 7 ถ.เพชรบุรีตัดใหม่<br>แขวงบางกะปิ เขตห้วยขวาง<br>กรุงเทพฯ 10310 ประเทศไทย</p>
+                            </div>
+
+                            <div class="flex flex-col space-y-2">
+                                <div class="flex items-center mb-2">
+                                     <img src="{% static 'image/telephone.png'%}" class="w-8 h-8 mr-4" alt="">
+                                     <p class="hospital">02 310 3000 หรือ 1719</p>
+                                </div>
+                                <div class="flex items-center">
+                                     <img src="{% static 'image/mail.png'%}" class="w-8 h-8 mr-4" alt="">
+                                     <p class="hospital">info@hopelifehospital.com</p>
+                                </div>
+                                <div class="flex items-center pt-2">
+                                     <img src="{% static 'image/facebook (1).png'%}" class="w-8 h-8 mr-4" alt="">
+                                     <p class="hospital">HopeLifeHospital</p>
+                                </div>
+                                <div class="flex items-center pt-2">
+                                     <img src="{% static 'image/line.png'%}" class="w-8 h-8 mr-4" alt="">
+                                     <p class="hospital">@HopeLifeHospital</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- รูปภาพที่อยู่โรงพยาบาล -->
+                <div class=""> <!-- Added margin-left to shift it slightly to the left -->
+                    <img src="{% static 'image/Hospital Location (1).png'%}" width="477" height="477" alt="Location" class=""> <!-- Increased size -->
+                </div>
+            </div>            
+        </div>
 {% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    login
+{% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div class="container w-full mx-auto flex flex-rows space-x-64 relative">
+        <div class="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="511" height="660" viewBox="0 0 511 660" fill="none">
+                <path d="M343.376 111.218C287.222 3.17635 87.6096 -1.78054 -4.26103 0.327711L-18 660H498.252C514.441 610.602 525.161 523.009 466.194 420.292C368.84 250.705 425.394 269.02 343.376 111.218Z" fill="url(#paint0_linear_6_216)"/>
+                <defs>
+                  <linearGradient id="paint0_linear_6_216" x1="-18" y1="330" x2="511" y2="330" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#5280E2"/>
+                    <stop offset="1" stop-color="#15CDCB"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            <img src="{% static 'image/Medical Kit.png'%}" class="absolute -bottom-0 left-40 w-[360px] h-[360px] z-20" alt="">
+            <img src="{% static 'image/Taylor Healthcare App 3D Character.png'%}" class="w-[610px] h-[610px] mt-10 absolute top-0 -left-32" alt="">
+        </div>
+
+        <div class="flex flex-col mt-[100px] items-center">
+            <div class="mb-16">
+                <h1 class="text-[#3E5279] text-5xl font-medium">เข้าสู่ระบบ</h1>
+            </div>
+    
+            <div class="">
+                <form action="">
+                    <div class="mb-4">
+                        <input type="text" class="bg-[#EAEAEA] rounded-[50px] pl-10 w-[618px] h-[65px] border-none outline-none" id="username" name="username" placeholder="กรอกรหัสผู้ป่วย" required>
+                    </div>
+                    <div class="">
+                        <input type="text" class="bg-[#EAEAEA] rounded-[50px] pl-10 w-[618px] h-[65px] border-none outline-none" id="username" name="username" placeholder="กรอกรหัสผ่าน" required>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <button class="flex items-center justify-center mt-10 text-base text-white font-normal font-['Kanit'] w-[618px] h-[65px] rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB] hover:scale-[0.98] transition-opacity transition-transform duration-500 ease-in-out">
+                    <span class="">เริ่มต้นการใช้งาน</span>
+                    <svg class="w-4 h-4 ml-1 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>  
+            </div>
+
+            <div class="flex space-x-2 mt-10">
+                <p class="text-[#C8C8C8]">ยังไม่มีบัญชีใช่ไหม ?</p>
+                <a href="{% url 'authen:register' %}">
+                    <p class="text-[#494949] hover:underline hover:scale-[0.98]">สร้างบัญชี</p>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

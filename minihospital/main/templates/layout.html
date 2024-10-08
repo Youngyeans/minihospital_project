@@ -13,42 +13,46 @@
 <body class="container-full h-screen w-screen overflow-x-hidden">
 
     {% block nav %}
-    <nav class="nav-bg bg-transparent bg-white fixed w-full shadow-md">
-            <div class="mx-5 px-6 py-3 flex justify-between items-center ">
-                <div class="nav-text text-white text-[#494949]">
-                    logo
-                </div>
-                <div class="flex space-x-9">
-                    <div class="flex items-center space-x-9">
-
-                        <div class="flex space-x-3 ">
-                            <img src="{% static 'image/home.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'main:home' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">หน้าแรก</a>
-                        </div>
-
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/doctor.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'appoint:doctor-list' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ค้นหาแพทย์</a>
-                        </div>
-        
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/schedule.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'appoint:appoint-today' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">คิวพบแพทย์</a>
-                        </div>
-        
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/plus.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'main:contact' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ติดต่อเรา</a>
-                        </div>
-
+    <div class="nav-bar">
+        <nav class="z-[100] nav-bg bg-transparent bg-white fixed w-full shadow-md">
+                <div class="mx-5 px-6 py-3 flex justify-between items-center ">
+                    <div class="nav-text text-white text-[#494949]">
+                        logo
                     </div>
-                    <button class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
-                        <img src="{% static 'image/user (3).png' %}" width="22" height="22">
-                        <p class="text-white">เข้าสู่ระบบ</p>
-                    </button>                
+                    <div class="flex space-x-9">
+                        <div class="flex items-center space-x-9">
+    
+                            <div class="flex space-x-3 ">
+                                <img src="{% static 'image/home.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'main:home' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">หน้าแรก</a>
+                            </div>
+    
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/doctor.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'appoint:doctor-list' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ค้นหาแพทย์</a>
+                            </div>
+            
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/schedule.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'appoint:appoint-today' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">คิวพบแพทย์</a>
+                            </div>
+            
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/plus.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'main:contact' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ติดต่อเรา</a>
+                            </div>
+    
+                        </div>
+                        <a href="{% url 'authen:login' %}">
+                            <button class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
+                                <img src="{% static 'image/user (3).png' %}" width="22" height="22">
+                                <p class="text-white">เข้าสู่ระบบ</p>
+                            </button>
+                        </a>            
+                    </div>
                 </div>
-            </div>
         </nav>
+    </div>
     {% endblock %}
     <div class="head pt-[73px]">
     {% block head %}
