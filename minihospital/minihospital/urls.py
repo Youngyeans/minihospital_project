@@ -22,6 +22,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("hopelife/", include("main.urls", namespace='main')),
-    path('hopelife/', include('appoint.urls', namespace='appoint')), 
+    path('hopelife/', include('appoint.urls', namespace='appoint')),
+    path('hopelife/', include('patient.urls', namespace='patient')), 
+    path('hopelife/', include('treat.urls', namespace='treat')), 
     path('hopelife/', include('authen.urls', namespace='authen')), 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

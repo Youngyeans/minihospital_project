@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    profile
+{% endblock %}
+{% block head %}
+<style>
+    body{
+        font-family: "Kanit", sans-serif;
+        font-size: 16px;
+    }
+    
+    .link{
+        transition: transform 0.3s ease, color 0.3s ease;
+        color: #494949;
+    }
+
+    .link:hover{
+        color: #15CDCB;
+        transform: scale(1.05);
+    }
+
+    .profile{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: transform 0.3s ease;
+    }
+
+    .profile:hover{
+        transform: scale(0.95);
+    }
+
+    .personal{
+        font-size: 48px;
+        color: #3E5279;
+    }
+
+    .boxbox{
+        box-shadow: 0px 0px 30.2px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 20px;
+    }
+
+    .edit{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .edit:hover{
+        transform: scale(0.95);
+    }
+
+    .name{
+        color: #909090;
+    }
+
+    .name2{
+        color: #494949;
+    }
+
+    .name3{
+        color: #15CDCB;
+    }
+
+    .notyet{
+        background-color: #E8374F;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .already{
+        background-color: #6ED655;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .cancel {
+        background-color: white; /* Inner background color */
+        border-radius: 50px;
+        border: 1px solid var(--Linear, #5280E2);
+        background: var(--Linear, linear-gradient(90deg, #5280E2 0%, #15CDCB 100%));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .cancel:hover {
+        /* transform: scale(0.98); */
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        color: white; /* Set text color to white on hover */
+        -webkit-background-clip: unset; /* Remove background clip on hover */
+        -webkit-text-fill-color: unset; /* Remove text fill color on hover */
+        /* font-weight: 400; */
+    }
+
+    .close{
+        top: 270px;
+        right: 400px;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .close:hover {
+        transform: scale(0.95);
+    }
+
+    /* .fade-in {
+        opacity: 0;
+        transform: translateY(-20px); /* ย้ายขึ้นจากตำแหน่งเริ่มต้น */
+        transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+    }
+
+    .fade-in-active {
+        opacity: 1;
+        transform: translateY(0); /* กลับสู่ตำแหน่งปกติ */
+    } */
+
+    .bin:hover{
+        transform: scale(0.95);
+        cursor: pointer;
+        color: #64111c;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container w-full mx-auto pt-12 pb-20 px-36 fade-in">
+        <div class="flex">
+            <a href="{% url 'treat:treatment-list' %}">
+                <svg class="name2 mt-3 mr-6 cursor-pointer" width="50" height="50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+            </a>              
+            <h1 class="personal font-medium mb-14 flex items-center">
+                หมายเลขนัดหมายที่ 3
+                <span class="ml-4 already text-white text-base px-6 py-1 rounded-full flex items-center">
+                    ได้รับการรักษาแล้ว
+                </span>
+            </h1>
+        </div>
+        
+
+        <!-- กล่อง boxbox ที่ 1 -->
+        <div class="boxbox bg-white p-12 fade-in mb-10 relative">
+
+            <div class="space-y-4"></div>
+                <div class="flex items-center">
+                    <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24fade-in">
+                    <div class="flex-grow mx-4">
+                        <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 4</h2>
+                        <p class="name2 mb-1">วันที่นัดหมาย : xx/xx/xxxx</p>
+                        <p class="name2 mb-2">ผลวินิจฉัย : -</p>
+                        <p class="name3 font-medium">นพ. ปรัชญา มณีปัญญา</p>
+                    </div>
+                </div>
+
+                <div class="p-16">
+                    <h2 class="name2 mb-1">ชื่อการรักษา : พบแพทย์</h2>
+                    <p class="name2 mb-1">คำอธิบายการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                    <p class="name2 mb-1">รายละเอียดการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                    <p class="name2 mb-1">ผลวินิจฉัย : xxxxxxxxxx</p>
+                </div>
+
+                <div class="px-16">
+                    <h2 class="name2 mb-1">ชื่อการรักษา : xxxxxxxx</h2>
+                    <p class="name2 mb-1">คำอธิบายการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                    <p class="name2 mb-1">รายละเอียดการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                </div>
+            </div>
+            
+        
+        </div>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // เลือกทุกองค์ประกอบที่คุณต้องการให้เฟด
+            const elements = document.querySelectorAll('.fade-in');
+
+            // เพิ่มคลาสเพื่อทำให้เฟด
+            setTimeout(() => {
+                elements.forEach(element => {
+                    element.classList.add('fade-in-active');
+                });
+            }, 100); // รอ 100ms ก่อนเริ่มเฟด
+        });
+    </script>
+{% endblock %}

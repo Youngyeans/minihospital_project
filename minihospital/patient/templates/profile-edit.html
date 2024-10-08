@@ -1,0 +1,199 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    profile
+{% endblock %}
+{% block head %}
+<style>
+    body{
+        font-family: "Kanit", sans-serif;
+        font-size: 16px;
+    }
+    
+    .link{
+        transition: transform 0.3s ease, color 0.3s ease;
+        color: #494949;
+    }
+
+    .link:hover{
+        color: #15CDCB;
+        transform: scale(1.05);
+    }
+
+    .profile{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: transform 0.3s ease;
+    }
+
+    .profile:hover{
+        transform: scale(0.95);
+    }
+
+    .personal{
+        font-size: 48px;
+        color: #3E5279;
+    }
+
+    .boxbox{
+        box-shadow: 0px 0px 30.2px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 20px;
+    }
+
+    .edit{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .edit:hover{
+        transform: scale(0.95);
+    }
+
+    .cancel{
+        color: #494949;
+        background-color: white; /* Inner background color */
+        border-radius: 50px;
+        border: 1px solid var(--Linear, #5280E2);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .cancel:hover{
+        transform: scale(0.95);
+    }
+
+    .name{
+        color: #494949;
+    }
+
+    .camera{
+        transition: transform 0.3s ease;
+    }
+
+    .camera:hover{
+        transform: scale(0.95);
+    }
+
+    /* .fade-in {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    }
+
+    .fade-in-active {
+        opacity: 1;
+    } */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container w-full mx-auto mt-14 fade-in">
+    <h1 class="personal text-5xl font-medium text-center mb-8">แก้ไขข้อมูลส่วนตัว</h1>
+   
+    <div class="flex flex-col md:flex-row items-start justify-between fade-in px-24"> <!-- เปลี่ยน items-center เป็น items-start -->
+        <!-- Box for Profile Picture -->
+        <div class="bg-white mt-8 w-fit px-10 pt-8 pb-14 boxbox mx-auto"> <!-- ลด px เป็น 8 -->
+            <div class="flex flex-col items-center relative">
+                <img src="{% static 'image/suzy01.jpg'%}" alt="Profile Picture" class="w-64 h-64 rounded-full object-cover" id="profilePicture">
+                
+                <!-- Camera Icon Wrapper -->
+                <div class="camera absolute top-24 p-4 bg-gray-700 bg-opacity-50 rounded-full cursor-pointer" onclick="document.getElementById('uploadPicture').click();">
+                    <img src="{% static 'image/camera.png'%}" alt="Camera Icon" class="w-12 h-12">
+                </div>
+                
+                <!-- File Upload Input -->
+                <input type="file" accept="image/*" id="uploadPicture" onchange="previewImage(event)" class="absolute opacity-0 cursor-pointer">
+                
+                <input class="text-2xl font-medium h-10 w-56 border-b-2 border-gray-300 focus:outline-none focus:border-blue-600 mt-4" id="id" type="text" placeholder="ซูจี แบ">
+            </div>
+        </div>
+
+        <!-- Form Inputs -->
+        <div class="grid grid-cols-2 gap-x-20 gap-y-2 ml-4 mt-10 mx-auto"> <!-- ลด gap เป็น 2 และ ml เป็น 4 -->
+            <div>
+                <label class="block name" for="personalId">รหัสบัตรประชาชน</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="personalId" type="text" placeholder="กรอกรหัสประจำตัว">
+            </div>
+            <div>
+                <label class="block name" for="dob">รหัสผู้ป่วย</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="dob" type="text" placeholder="เลือกวันเกิด">
+            </div>
+            <div>
+                <label class="block name" for="others">เบอร์โทร</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">สัญชาติ</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">เพศ</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">วันเกิด</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="date" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">ส่วนสูง</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">น้ำหนัก</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">กรุ๊ปเลือด</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">ภูมิแพ้</label>
+                <input class="h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black mb-4" id="others" type="text" placeholder="กรอกข้อมูลอื่นๆ">
+            </div>
+            <div>
+                <label class="block name" for="others">ที่อยู่</label>
+                <textarea class="border-b-2 border-gray-300 focus:outline-none focus:border-black" id="others"></textarea>
+            </div>            
+        </div>
+    </div>
+</div>
+<div class="flex justify-end pr-20 pt-16 pb-8 space-x-5">
+    <a href="{% url 'patient:profile' %}">
+        <button class="cancel py-5 px-14 rounded-full inline-flex items-center">
+            <span>ยกเลิก</span>
+        </button>
+    </a>
+    <a href="">
+        <button class="edit text-white py-5 px-12 rounded-full inline-flex items-center">
+            <span>บันทึก</span>
+            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+    </a>
+</div>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        const imagePreview = document.getElementById('profilePicture');
+        if (file) {
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // เลือกทุกองค์ประกอบที่คุณต้องการให้เฟด
+        const elements = document.querySelectorAll('.fade-in');
+
+        // เพิ่มคลาสเพื่อทำให้เฟด
+        setTimeout(() => {
+            elements.forEach(element => {
+                element.classList.add('fade-in-active');
+            });
+        }, 100); // รอ 100ms ก่อนเริ่มเฟด
+    });
+</script>
+{% endblock %}

@@ -57,6 +57,8 @@ class Patient(models.Model):
     last_name = models.CharField(max_length=255)
     personalID = models.CharField(max_length=13, unique=True)
     gender = models.CharField(choices=Gender.choices)
+    password = models.CharField(max_length=128)
+    confirmpassword = models.CharField(max_length=128)
     nationality = models.CharField(choices=Nationality.choices)
     DOB = models.DateField()
     height = models.DecimalField(max_digits=10, decimal_places=2)
