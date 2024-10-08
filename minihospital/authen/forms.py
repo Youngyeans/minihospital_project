@@ -144,6 +144,14 @@ class PatientRegistrationForm(forms.ModelForm):
                 'class': 'border-none outline-none bg-[#EAEAEA] rounded-[50px] pl-10 pt-5 flex items-center w-full h-[65px] border-none outline-none text-[#494949]',
                 'placeholder': 'ที่อยู่'
             }),
+            "password": TextInput(attrs={
+                'class': 'bg-transparent border-none outline-none',
+                'placeholder': 'รหัสผ่าน'
+            }),
+            "confirmpassword": TextInput(attrs={
+                'class': 'bg-transparent border-none outline-none',
+                'placeholder': 'ยืนยันรหัสผ่าน'
+            }),
             # "patient_image": URLInput(attrs={
             #     'class': 'absolute opacity-0 cursor-pointer',
             #     'type' : 'url'
@@ -153,7 +161,10 @@ class PatientRegistrationForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['patient_image'].widget.attrs.update({'style': 'opacity: 0; position: absolute; top: 25px; left:-8px; cursor: pointer; z-index: 10;'})
+        self.fields['patient_image'].widget.attrs.update({
+            'style': 'opacity: 0; position: absolute; top: 25px; left:-8px; cursor: pointer; z-index: 10;',
+            'onchange': 'onchange="previewImage(event)'  # Replace with your actual function
+        })
 
     def clean(self):
         cleaned_data = super().clean()

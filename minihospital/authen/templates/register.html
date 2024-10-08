@@ -58,14 +58,16 @@
 
                             <div class="">
                                 <div class="relative w-fit mr-10 -mt-9">
-                                    <img src="{% static 'image/profile-user.png'%}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" id="profilePicture">
-                                    {{ form.patient_image }}
+                                    <img src="{% if form.patient_image.value %}{{ form.patient_image.value.url }}{% else %}{% static 'image/profile-user.png' %}{% endif %}" 
+                                         alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" id="profilePicture">
                                     
+                                        {{ form.patient_image }}
+                            
                                     <div class="camera absolute top-[22px] right-[22px] p-2 bg-gray-500 bg-opacity-50 rounded-full cursor-pointer" onclick="document.getElementById('uploadPicture').click();">
-                                        <img src="{% static 'image/camera.png'%}" alt="Camera Icon" class="w-5">
+                                        <img src="{% static 'image/camera.png' %}" alt="Camera Icon" class="w-5">
                                     </div>
-                                    
-                                    <!-- <input type="file" accept="image/*" id="uploadPicture" onchange="previewImage(event)" class="absolute opacity-0 cursor-pointer"> -->
+                            
+                                    <input type="file" accept="image/*" id="uploadPicture" onchange="previewImage(event)" class="absolute opacity-0 cursor-pointer">
                                 </div>
                                 <p class="text-[#C8C8C8] ml-1">เพิ่มรูปภาพ</p>
                             </div>
@@ -159,16 +161,19 @@
 
     <script>
         function previewImage(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        const imagePreview = document.getElementById('profilePicture');
-        if (file) {
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
+            const profilePicture = document.getElementById('profilePicture');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    profilePicture.src = e.target.result; // Set the src of the img element to the uploaded image
+                };
+
+                reader.readAsDataURL(file); // Convert the image file to base64 URL
             }
-            reader.readAsDataURL(file);
         }
-    }
 
     function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');

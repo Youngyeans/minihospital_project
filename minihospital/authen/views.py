@@ -9,10 +9,24 @@ from datetime import datetime
 
 class LoginView(View):
     def get(self, request):
-        return render(request, 'login.html', {"form": None})
+        form = PatientRegistrationForm()
+        return render(request, 'login.html', {"form": form})
 
     def post(self, request):
-        pass
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # If user is valid, log them in and redirect to home
+            login(request, user)
+            return redirect('home')  # Change to your home URL name
+        else:
+            # Show error message
+            messages.error(request, "Invalid username or password.")
+            return render(request, 'login.html', {"form": PatientRegistrationForm()})
 
 class LogoutView(View):
     def get(self, request):
@@ -40,6 +54,8 @@ class RegisterView(View):
                 'last_name': form.cleaned_data['last_name'],
                 'personalID': form.cleaned_data['personalID'],
                 'nationality': form.cleaned_data['nationality'],
+                'password': form.cleaned_data['password'],
+                'confirmpassword': form.cleaned_data['confirmpassword'],
                 'phone': form.cleaned_data['phone'],
                 'gender': form.cleaned_data['gender'],
                 'DOB': form.cleaned_data['DOB'].strftime('%Y-%m-%d'),  # Convert date to string
