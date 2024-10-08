@@ -1,9 +1,108 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %}
-    appointment today
+    doctor-list
 {% endblock %}
 
 {% block content %}
-    <h1>รายชื่อแพทย์</h1>
+<div class="container-full flex flex-col justify-center items-center">
+
+    <div class="container pl-10 pt-10 flex justify-between items-center">
+        <div class="flex justify-center items-end space-x-10">
+            <p class="text-[48px] font-semibold text-[#3E5279]">รายชื่อแพทย์</p>
+        </div>
+        <div class="flex space-x-5 justify-center items-center">
+            <div class="relative w-[400px]">
+                <input type="text" class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" placeholder="ค้นหา">
+                <img src="{% static 'image/magnifying-glass.png' %}" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-5 h-5">
+            </div>
+            <div id="search1" class="hover:from-[#15CDCB] hover:to-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] flex justify-center rounded-full items-center w-[100px] h-[35px] p-[2px]">
+                <button id="search2" class="text-[#494949]duration-300 transition ease-in-out delay-150 w-full h-full flex flex justify-center items-center bg-white px-7 py-2 text-center rounded-full text-[#494949] text-[16px]">ค้นหา</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container flex flex-col px-10 py-5">
+        <p class="text-[#909090]">รายชื่อแพทย์ทั้งหมดที่ประจำการอยู่ในโรงพยาบาล โฮปไลฟ์</p>
+        <div class="flex space-x-5 py-4">
+            <div class="hover:scale-110 hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#15CDCB] rounded-[50px] inline-flex items-center px-5 py-2 cursor-pointer ">
+                <div class="text-center text-white text-base font-normal">ทั้งหมด</div>
+            </div>
+
+            <div id="cat1" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img1" src="{% static 'image/bone.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">กระดูก</div>
+            </div>
+
+            <div id="cat2" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img2" src="{% static 'image/baby-boy.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">เด็ก</div>
+            </div>
+
+            <div id="cat3" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img3" src="{% static 'image/visible.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ตา หู คอ จมูก</div>
+            </div>
+
+            <div id="cat4" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img4" src="{% static 'image/hand.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ผิวหนัง</div>
+            </div>
+
+            <div id="cat5" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img5" src="{% static 'image/stethoscope.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">โรคทั่วไป</div>
+            </div>
+
+            <div id="cat6" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
+                <img id="img6" src="{% static 'image/female.png' %}" width="22" height="22" class="">
+                <div class="text-center text-base font-normal">ผู้หญิง</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full flex flex-col justify-center items-center">
+        
+        <div class="mt-6 grid grid-cols-3 gap-10">
+            <!-- Doctor card (repeat this block for each doctor card) -->
+            {% for doc in doctor_list %}
+            <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 mt-24 shadow-box relative bg-white w-[425px] h-[234px] rounded-[20px] border border-[#eaeaea] flex flex-col justify-center items-center">
+                <div class="absolute -top-20 w-[153px] h-[153px] bg-[#e1f6f5] rounded-full">
+                    <img class="rounded-full" width="153" height="153" src="{{ doc.doctor_image.url }}" />
+                </div>
+                <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.first_name}} {{doc.last_name}}</div>
+                <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
+                <div id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
+                    <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
+                    <div class="text-center text-base font-normal">รายละเอียด</div>
+                </div>
+            </div>
+            
+
+            {% endfor %}
+        </div>
+
+        <div class="flex p-5 space-x-6 justify-center items-center m-7">
+            <div class="flex space-x-4 mx-2">
+                <img class="" width="22" height="22" src="{% static 'image/back.png'%}" />
+                <div class="text-[#494949] text-base font-normal">หน้าก่อน</div>
+            </div>
+            <div class="w-[35px] h-[35px] bg-[#15cdcb] flex justify-center items-center rounded-full text-white text-base font-normal">
+                <div class="text-white text-base font-normal">1</div>
+            </div>
+            <div class="text-[#494949] text-base font-normal">2</div>
+            <div class="text-[#494949] text-base font-normal">3</div>
+            <div class="text-[#494949] text-base font-normal">4</div>
+            <div class="text-[#494949] text-base font-normal">5</div>
+            <div class="flex space-x-4 mx-2">
+                <div class="text-[#494949] text-base font-normal">หน้าถัดไป</div>
+                <img class="" width="22" height="22" src="{% static 'image/next.png'%}" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'js/categories.js' %}"></script>
 {% endblock %}

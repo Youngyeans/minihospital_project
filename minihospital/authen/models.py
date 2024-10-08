@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -65,27 +66,31 @@ class Patient(models.Model):
     address = models.TextField()
     allergy = models.TextField(blank=True, null=True)
     registrationDate = models.DateField(auto_now_add=True)
-    patient_image = models.ImageField(upload_to='../static/image/', blank=True, null=True)
+    patient_image = models.ImageField(upload_to='images/patient/', blank=True, null=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
     
 
 class Doctor(models.Model):
+    prefix = models.CharField(max_length=10, default='นพ.')
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
     address = models.TextField()
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    doctor_image = models.ImageField(upload_to='../static/image/')
+    doctor_image = models.ImageField(upload_to="images/doctor/", blank=True, null=True)
     shift_day = models.CharField(max_length=50)
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField()
+    personalID = models.CharField(max_length=13, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=0)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+# password : Xy7#p9Tk!
     
 class Staff(models.Model):
     first_name = models.CharField(max_length=255)

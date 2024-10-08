@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    create doctor
+{% endblock %}
+
+{% block content %}
+<div class="">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button class="bg-pink-500 p-4" type="submit">create doctor</button>
+    </form>
+</div>
+{% endblock %}

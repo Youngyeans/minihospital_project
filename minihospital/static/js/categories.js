@@ -39,3 +39,26 @@ const count = 6;
         bg.classList.add('text-[#494949]');
     });
 
+    const num = JSON.parse("{{ id_last|json_script:'id_last' }}");
+
+    // วนลูปตามจำนวนที่ต้องการ
+    for (let i = 1; i <= num; i++) {
+        const button = document.getElementById("btn" + i);
+        const icon = document.getElementById("icon" + i);
+
+        // ตรวจสอบว่า button และ icon มีอยู่ก่อนที่จะเพิ่ม event listener
+        if (button && icon) {
+            // เพิ่ม transition ให้ภาพตั้งแต่แรก
+            icon.classList.add('transition', 'duration-300', 'ease-in-out', 'delay-150');
+
+            // เมื่อเมาส์เข้าไปใน hover-area
+            button.addEventListener('mouseenter', function() {
+                icon.classList.add('brightness-200');  // เพิ่มคลาส brightness-200
+            });
+
+            // เมื่อเมาส์ออกจาก hover-area
+            button.addEventListener('mouseleave', function() {
+                icon.classList.remove('brightness-200');  // ลบคลาส brightness-200
+            });
+        }
+    }
