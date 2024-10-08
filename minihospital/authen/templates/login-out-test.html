@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    test login log out
+{% endblock %}
+
+{% block content %}
+    <h1>สวัสดี คุณหมอ {{user.first_name}} {{user.last_name}}</h1>
+    <a class="bg-pink-500 text-light" href="{% url 'authen:logout' %}"><b>Logout</b></a>
+{% endblock %}

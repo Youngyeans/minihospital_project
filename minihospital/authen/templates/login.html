@@ -30,24 +30,26 @@
     
             <div class="">
                 <form method="post" action="{% url 'authen:login' %}">
-
+                    {% csrf_token %}
+                    {{ form.username.errors }}
                     <div class="mb-4 bg-[#EAEAEA] rounded-[50px] flex items-center pl-10 w-[618px] h-[65px] border-none outline-none">
-                        {{ form.personalID }}
+                        {{ form.username }}
                     </div>
+                    {{ form.password.errors }}
                     <div class="bg-[#EAEAEA] rounded-[50px] flex items-center pl-10 w-[618px] h-[65px] border-none outline-none">
                         {{ form.password }}
+                    </div>
+                    <div>
+                        <button type="submit" class="flex items-center justify-center mt-10 text-base text-white font-normal font-['Kanit'] w-[618px] h-[65px] rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB] hover:scale-[0.98] transition-opacity transition-transform duration-500 ease-in-out">
+                            <span class="">เริ่มต้นการใช้งาน</span>
+                            <svg class="w-4 h-4 ml-1 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>  
                     </div>
                 </form>
             </div>
 
-            <div>
-                <button type="submit" class="flex items-center justify-center mt-10 text-base text-white font-normal font-['Kanit'] w-[618px] h-[65px] rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB] hover:scale-[0.98] transition-opacity transition-transform duration-500 ease-in-out">
-                    <span class="">เริ่มต้นการใช้งาน</span>
-                    <svg class="w-4 h-4 ml-1 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>  
-            </div>
 
             <div class="flex space-x-2 mt-10">
                 <p class="text-[#C8C8C8]">ยังไม่มีบัญชีใช่ไหม ?</p>

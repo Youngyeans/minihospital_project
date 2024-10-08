@@ -16,6 +16,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='doctor',
             name='user',
-            field=models.OneToOneField(default=0, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(null=True,
+            blank=True,
+            on_delete=models.CASCADE,
+            to='auth.User'),
         ),
     ]

@@ -3,8 +3,14 @@ from authen.models import Doctor
 from django.forms.widgets import TimeInput
 from django.core.exceptions import ValidationError
 from datetime import timedelta, datetime, date
+from django import forms 
 
 class DoctorForm(ModelForm):
+    first_name = forms.CharField(max_length=225)
+    last_name = forms.CharField(max_length=225)
+    email = forms.EmailField()
+    personalID = forms.CharField(max_length=13)
+
     class Meta:
         model = Doctor
         fields = [
@@ -13,6 +19,7 @@ class DoctorForm(ModelForm):
             "last_name",
             "phone",
             "email",
+            "personalID",
             "address",
             "department",
             "doctor_image",
