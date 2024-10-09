@@ -53,12 +53,12 @@ class Patient(models.Model):
         O_NEGATIVE = "O-"
 
     prefix = models.CharField(choices=Prefix.choices)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    personalID = models.CharField(max_length=13, unique=True)
+    # first_name = models.CharField(max_length=255)
+    # last_name = models.CharField(max_length=255)
+    # personalID = models.CharField(max_length=13, unique=True)
     gender = models.CharField(choices=Gender.choices)
-    password = models.CharField(max_length=128)
-    confirmpassword = models.CharField(max_length=128)
+    # password = models.CharField(max_length=128)
+    # confirmpassword = models.CharField(max_length=128)
     nationality = models.CharField(choices=Nationality.choices)
     DOB = models.DateField()
     height = models.DecimalField(max_digits=10, decimal_places=2)
@@ -69,6 +69,7 @@ class Patient(models.Model):
     allergy = models.TextField(blank=True, null=True)
     registrationDate = models.DateField(auto_now_add=True)
     patient_image = models.ImageField(upload_to='images/patient/', blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
