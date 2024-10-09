@@ -84,11 +84,11 @@
                         </div>
 
                         <div class="bg-[#EAEAEA] rounded-[50px] pl-10 flex items-center w-full h-[65px] border-none outline-none text-[#494949]">
-                                {{ form.personalID }}
+                            {{ form.personalID }}
                         </div>
 
                         <div class="relative bg-[#EAEAEA] rounded-[50px] pl-10 flex items-center w-full h-[65px] border-none outline-none text-[#494949]">
-                                {{ form.password }}
+                            {{ form.password }}
                             <img src="{% static 'image/view.png' %}" alt="Show Password" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-8 cursor-pointer" id="togglePassword" onclick="togglePasswordVisibility()">
                         </div>
             
@@ -175,7 +175,7 @@
             }
         }
 
-    function togglePasswordVisibility() {
+        function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('togglePassword');
 
