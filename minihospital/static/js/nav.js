@@ -10,23 +10,33 @@ document.addEventListener("DOMContentLoaded", function() {
             text.classList.remove('text-[#494949]');
         });
 
-        bg.classList.remove('bg-white')
-        bg.classList.remove('shadow-md')
+        bg.classList.remove('bg-white');
+        bg.classList.remove('shadow-md');
 
-        head.classList.remove('pt-[73px]')
-
-    }
-    else {
+        head.classList.remove('pt-[73px]');
+    } else {
         texts.forEach(text => {
             text.classList.remove('text-white');
         });
 
-        bg.classList.remove('bg-transparent')
+        bg.classList.remove('bg-transparent');
 
         icons.forEach(icon => {
             icon.classList.remove('brightness-200');
-            
         });
     }
-  });
-  
+});
+
+    
+function toggleDropdown() {
+    console.log("click user");
+    const dropdown = document.getElementById('dropdownMenu');
+    dropdown.classList.toggle('hidden');
+}
+
+window.onclick = function(event) {
+    const dropdown = document.getElementById('dropdownMenu');
+    if (!event.target.closest('.relative')) {
+        dropdown.classList.add('hidden');
+    }
+};

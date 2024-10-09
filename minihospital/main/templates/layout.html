@@ -8,7 +8,6 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{% static 'js/nav.js' %}"></script>
 </head>
 <body class="container-full h-screen w-screen overflow-x-hidden">
 
@@ -42,10 +41,28 @@
                         </div>
 
                     </div>
-                    <a href="{% url 'authen:login' %}" class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
-                        <img src="{% static 'image/user (3).png' %}" width="22" height="22">
-                        <p class="text-white">เข้าสู่ระบบ</p>
-                    </a>                
+                    {% if user.is_authenticated %}
+                    <div class="relative flex flex-col justify-center">
+                        <button onclick="toggleDropdown()" class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
+                            <img src="{% static 'image/user (3).png' %}" width="22" height="22">
+                            <p class="text-white">คุณ {{ user.first_name }}</p>
+                        </button>
+
+                        <div id="dropdownMenu" class="hidden absolute -bottom-[130px] rounded-[20px] bg-white border border-[#eaeaea] grid grid-cols-1 gap-1 py-3">
+                            <a href="{% url 'patient:profile' %}"class="text-[#494949] text-base font-normal mx-5">โปรไฟล์ผู้ใช้</a>
+                            <hr class="w-full border border-[#eaeaea]">
+                            <a href="{% url 'treat:treatment-list' %}" class="text-[#494949] text-base font-normal mx-5">ประวัติการรักษา</a>
+                            <hr class="w-full border border-[#eaeaea]">
+                            <a href="{% url 'authen:logout' %}" class="text-[#15cdcb] text-base font-normal underline mx-5">ออกจากระบบ</a>
+                        </div>  
+                    </div>
+                    {% else %}
+                        <a href="{% url 'authen:login' %}" class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
+                            <img src="{% static 'image/user (3).png' %}" width="22" height="22">
+                            <p class="text-white">เข้าสู่ระบบ</p>
+                        </a>
+
+                    {% endif %}              
                 </div>
         </nav>
     </div>
@@ -57,6 +74,6 @@
     {% block content %}
     {% endblock %}
     </div>
-
+    <script src="{% static 'js/nav.js' %}"></script>
 </body>
 </html>
