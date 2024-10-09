@@ -78,8 +78,8 @@
         <div class="boxbox bg-white w-fit pt-8 pb-12 px-16 mx-auto fade-i">
             <div class="flex flex-col items-center">
                 <img src="{% static 'image/suzy01.jpg'%}" alt="Profile Picture" class="w-52 h-52 rounded-full fade-i">
-                <h1 class="suzy text-2xl font-medium mt-5 fade-i">ซูจี แบ</h1>
-                <p class="name mb-8 fade-i">รหัสผู้ป่วย xxxxxx</p>
+                <h1 class="suzy text-2xl font-medium mt-5 fade-i">{{ patient.first_name }} {{ patient.last_name }}</h1>
+                <p class="name mb-8 fade-i">รหัสผู้ป่วย {{ patient.personalID }}</p>
                 <a href="{% url 'patient:profile-edit' %}">
                     <button class="edit text-xl text-white py-3 px-14 rounded-full inline-flex items-center">
                         <span>แก้ไข</span>

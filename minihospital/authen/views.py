@@ -7,20 +7,23 @@ from .forms import PatientRegistrationForm
 from django.contrib import messages
 from datetime import datetime
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+from django.contrib.auth.models import User, Group
 
 class LoginView(View):
     def get(self, request):
         # form = PatientRegistrationForm()
         form = AuthenticationForm()
         return render(request, 'login.html', {"form": form})
-    
+
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user() 
             login(request,user)
-            return redirect('authen:test')  
+            return redirect('main:home')
 
         return render(request,'login.html', {"form":form})
     
@@ -104,6 +107,7 @@ class ValidationView(View):
         return render(request, 'validation.html', registration_data)
 
     def post(self, request):
+        # form = AuthenticationForm()
         print("Post method triggered")  # Debugging line
         if 'save' in request.POST:
             print("Save button clicked")  # Debugging line
@@ -118,6 +122,16 @@ class ValidationView(View):
             
             # Create a new Patient object and save to the database
             try:
+
+                # Create the User object
+                user = User.objects.create_user(
+                    username=registration_data['personalID'],
+                    password=registration_data['password'],  # You may replace this with the actual password
+                    first_name=registration_data['first_name'],
+                    last_name=registration_data['last_name'],
+                )
+
+                # Create the Patient object and link it to the User
                 patient = Patient(
                     prefix=registration_data['prefix'],
                     first_name=registration_data['first_name'],
@@ -133,6 +147,7 @@ class ValidationView(View):
                     allergy=registration_data['allergy'],
                     address=registration_data['address'],
                     patient_image=registration_data.get('patient_image'),
+                    user=user  # Linking the user to the patient
                 )
                 patient.save()  # Save the patient data to the database
                 messages.success(request, "Registration successful.")
@@ -144,5 +159,6 @@ class ValidationView(View):
 
         elif 'cancel' in request.POST:
             print("Cancel button clicked")  # Debugging line
-            # del request.session['registration_data']
             return redirect('authen:register')
+        
+        return render(request, "home.html")

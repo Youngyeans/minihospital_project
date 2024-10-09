@@ -62,6 +62,11 @@ class PatientRegistrationForm(forms.ModelForm):
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=True)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES, required=True)
 
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    personalID = forms.CharField(max_length=13)
+    password = forms.CharField(max_length=32)
+
     class Meta:
         model = Patient
         fields = [
@@ -91,10 +96,10 @@ class PatientRegistrationForm(forms.ModelForm):
                 'placeholder': 'รหัสผ่าน'
             }),
             "confirmpassword": PasswordInput(attrs={
-                'id': 'password',
-                'name': 'password',
+                'id': 'password_confirm',
+                'name': 'password_confirm',
                 'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'รหัสผ่าน'
+                'placeholder': 'ยืนยันรหัสผ่าน'
             }),
             "prefix": Select(attrs={
                 'class': 'bg-transparent border-none outline-none'
@@ -144,19 +149,6 @@ class PatientRegistrationForm(forms.ModelForm):
                 'class': 'border-none outline-none bg-[#EAEAEA] rounded-[50px] pl-10 pt-5 flex items-center w-full h-[65px] border-none outline-none text-[#494949]',
                 'placeholder': 'ที่อยู่'
             }),
-            "password": TextInput(attrs={
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'รหัสผ่าน'
-            }),
-            "confirmpassword": TextInput(attrs={
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'ยืนยันรหัสผ่าน'
-            }),
-            # "patient_image": URLInput(attrs={
-            #     'class': 'absolute opacity-0 cursor-pointer',
-            #     'type' : 'url'
-            # })
-
         }
         
     def __init__(self, *args, **kwargs):
@@ -175,3 +167,27 @@ class PatientRegistrationForm(forms.ModelForm):
             raise forms.ValidationError("Password and Confirm Password do not match!")
         
         return cleaned_data
+    
+
+
+# class PatientLoginForm(forms.ModelForm):
+
+#     class Meta:
+#         model = Patient
+#         fields = [
+#             'personalID',
+#             'password',
+#         ]
+
+#         widgets = {
+#             "password": PasswordInput(attrs={
+#                 'id': 'password',
+#                 'name': 'password',
+#                 'class': 'bg-transparent border-none outline-none',
+#                 'placeholder': 'รหัสผ่าน'
+#             }),
+#             "personalID": TextInput(attrs={
+#                 'class': 'bg-transparent border-none outline-none',
+#                 'placeholder': 'รหัสบัตรประชาชน'
+#             })
+#         }
