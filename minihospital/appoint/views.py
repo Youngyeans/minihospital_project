@@ -12,7 +12,7 @@ class AppointTodayView(View):
 
     def get(self, request):
         doctor_list = range(9)
-        today = date.today() 
+        today = date.today().strftime("%d/%m/%Y")   
         context ={
             'doctor_list': doctor_list,
             'today': today,
