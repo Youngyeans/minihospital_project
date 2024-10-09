@@ -61,6 +61,11 @@ class PatientRegistrationForm(forms.ModelForm):
     nationality = forms.ChoiceField(choices=NATIONALITY_CHOICES, required=True)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=True)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES, required=True)
+    first_name = forms.CharField(max_length=225)
+    last_name = forms.CharField(max_length=225)
+    personalID = forms.CharField(max_length=13)
+    password = forms.CharField(max_length=32)
+    confirmpassword = forms.CharField(max_length=32)
 
     class Meta:
         model = Patient
@@ -88,7 +93,7 @@ class PatientRegistrationForm(forms.ModelForm):
                 'id': 'password',
                 'name': 'password',
                 'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'รหัสผ่าน'
+                'placeholder': 'รหัสผ่าน',
             }),
             "confirmpassword": PasswordInput(attrs={
                 'id': 'password',

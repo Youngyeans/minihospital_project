@@ -122,54 +122,54 @@ class ValidationView(View):
             
             # Create a new Patient object and save to the database
             try:
-
-                # Create the User object
-                user = User.objects.create_user(
-                    username=registration_data['personalID'],
-                    password=registration_data['password'],  # You may replace this with the actual password
-                    first_name=registration_data['first_name'],
-                    last_name=registration_data['last_name'],
-                )
-
-                user = authenticate(
-                        request,
-                        username= registration_data['personalID'],
-                        password=registration_data['password']
+                with transaction.atomic():
+                    # Create the User object
+                    user = User.objects.create_user(
+                        username=registration_data['personalID'],
+                        password=registration_data['password'],  # You may replace this with the actual password
+                        first_name=registration_data['first_name'],
+                        last_name=registration_data['last_name'],
                     )
 
-                patient_group = Group.objects.get(name='patient')
-                user.groups.add(patient_group)
+                    user = authenticate(
+                            request,
+                            username= registration_data['personalID'],
+                            password=registration_data['password']
+                        )
 
-                # Create the Patient object and link it to the User
-                patient = Patient(
-                    prefix=registration_data['prefix'],
-                    first_name=registration_data['first_name'],
-                    last_name=registration_data['last_name'],
-                    personalID=registration_data['personalID'],
-                    nationality=registration_data['nationality'],
-                    phone=registration_data['phone'],
-                    gender=registration_data['gender'],
-                    DOB=datetime.strptime(registration_data['DOB'], '%Y-%m-%d').date(),
-                    height=Decimal(registration_data['height']),
-                    weight=Decimal(registration_data['weight']),
-                    blood_group=registration_data['blood_group'],
-                    allergy=registration_data['allergy'],
-                    address=registration_data['address'],
-                    patient_image=registration_data.get('patient_image'),
-                    user=user  # Linking the user to the patient
-                )
-                
-                patient.save()  # Save the patient data to the database
-                messages.success(request, "Registration successful.")
+                    patient_group = Group.objects.get(name='patient')
+                    user.groups.add(patient_group)
+
+                    # Create the Patient object and link it to the User
+                    patient = Patient(
+                        prefix=registration_data['prefix'],
+                        # first_name=registration_data['first_name'],
+                        # last_name=registration_data['last_name'],
+                        # personalID=registration_data['personalID'],
+                        nationality=registration_data['nationality'],
+                        phone=registration_data['phone'],
+                        gender=registration_data['gender'],
+                        DOB=datetime.strptime(registration_data['DOB'], '%Y-%m-%d').date(),
+                        height=Decimal(registration_data['height']),
+                        weight=Decimal(registration_data['weight']),
+                        blood_group=registration_data['blood_group'],
+                        allergy=registration_data['allergy'],
+                        address=registration_data['address'],
+                        patient_image=registration_data.get('patient_image'),
+                        user=user  # Linking the user to the patient
+                    )
+                    
+                    patient.save()  # Save the patient data to the database
+                    messages.success(request, "Registration successful.")
 
             except Exception as e:
                 print(f"Error saving patient: {e}")  # Debugging line
                 messages.error(request, "Failed to save patient data.")
                 return redirect('authen:register')
 
-                del request.session['registration_data']  # Clear session data after saving
-                
-                return redirect('authen:login')
+            del request.session['registration_data']  # Clear session data after saving
+            
+            return redirect('authen:login')
 
         elif 'cancel' in request.POST:
             print("Cancel button clicked")  # Debugging line
