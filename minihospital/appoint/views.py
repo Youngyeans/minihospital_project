@@ -77,5 +77,10 @@ class CreateDoctorView(View):
 class DoctorAppointmentView(View):
 
     def get(self, request):
-    
-        return render(request, 'doctor-list.html')
+        today = date.today() 
+        week = range(7)
+        context ={
+            'week' : week,
+            'today': today,
+        }
+        return render(request, 'appointment.html', context)

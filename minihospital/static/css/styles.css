@@ -27,3 +27,8 @@ body {
 .bgwhite{
     border-radius: 50px 0px 0px 50px;
 }
+
+input#startDate::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    pointer-events: none;
+}

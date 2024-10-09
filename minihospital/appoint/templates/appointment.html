@@ -1,9 +1,120 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %}
-    appointment today
+    appointment
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 {% endblock %}
 
 {% block content %}
-    <h1>นัดหมาย</h1>
+<div class="container-full flex flex-col justify-center items-center">
+
+    <div class="container m-5 flex space-x-6 justify-start items-center">
+        <div class="text-[#909090] text-[20px] font-normal">คิวพบแพทย์ </div>
+        <img class="" width="14" height="14" src="{% static 'image/play-button.png' %}" />
+        <div class="text-center text-[#909090] text-[20px] font-normal">นพ.มิจิ จามจาม</div>
+    </div>
+
+    <!-- <div class="w-[963px] h-[0px] left-[239px] top-[976px] absolute border border-[#eaeaea]"></div>
+    <div class="w-[963px] h-[0px] left-[239px] top-[1036px] absolute border border-[#eaeaea]"></div> -->
+    <!-- <div class="left-[150px] top-[1380px] absolute text-[#3d5279] text-[32px] font-medium font-['Kanit'] leading-[55px]">อาการ   </div> -->
+    
+    <div class="container m-5 flex space-x-6 justify-center items-center p-5 bg-pink-500">
+        <div class="bg-white rounded-[20px] shadow w-[600px] p-10">
+            <div class="flex space-x-4">
+                <div class="w-full h-auto mt-2">
+                    <div class="text-start text-[#494949] text-lg font-normal">10:00 - 16:00 น.</div>
+                    <div class="text-[#494949] text-base font-normal">ศุกร์- อาทิตย์</div>
+                    <div class="flex space-x-4 items-center">
+                        <div class="text-start text-[#c7c7c7] text-base font-normal">สถานะ :</div>
+                        <div class="bg-[#d2e0ff] rounded-full text-left text-[#6986c4] text-base font-[16px] py-1 px-5">นอกเวลาทำการ</div>
+                    </div>
+                </div>
+                <div class="w-[100px] h-[100px] bg-[#e1f6f5] rounded-full">
+                    <img class="rounded-full" width="100" height="100" src="{{ doc.doctor_image.url }}" />
+                </div>
+            </div>
+            <hr class="border-2 border-b-[#efefef] w-full mt-3 mb-5">
+            <div class="text-start text-[#3d5279] text-[32px] font-semibold">นพ.มิจิ จามจาม</div>
+            <div class="bg-[#d2e0ff] rounded-[30px] mt-3 mb-4 text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
+                ตา หู คอ จมูก
+            </div>
+            <div class="text-[#909090] text-lg font-normal">แพทย์เฉพาะทางด้านดวงตาที่มีความเชี่ยวชาญในการตรวจวินิจฉัยและรักษาความผิดปกติและโรคที่เกี่ยวข้องกับดวงตาและระบบการมองเห็น </div>
+        </div>
+        
+        <div class="bg-blue-300 h-auto w-full flex flex-col items-center">
+            <div class="w-full flex space-x-5 items-center justify-between">
+                <div class="text-center text-[#3d5279] text-[32px] font-semibold">นัดหมายแพทย์</div>
+                <div class="w-[350px] flex items-center relative">
+                    <input id="startDate" 
+                        type="text" 
+                        placeholder="dd/mm/yyyy" 
+                        value="{{ today }}"
+                        class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]">
+                    <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker()"  class="cursor-pointer absolute right-6" width="27" height="27">
+                </div>
+                <h1>{{ today }}</h1>
+                <script src="{% static 'js/dateInput.js' %}"></script>
+
+            </div>
+            <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันนัดหมายที่ต้องการ</div>
+            
+            <div class="flex justify-between items-center">
+                
+                <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}">
+                
+                <div class="grid grid-cols-7 grid-cols-1 gap-[26px] m-16">
+                    {% for i in week%}
+                    {% if i == 0 %}
+                    <div class="relative bg-[#15CDCB] text-white rounded-[10px] flex flex-col justify-center items-center p-6">
+                        <div class="text-center text-[32px] font-medium">27</div>
+                        <div class="text-center text-lg font-normal">พฤ.</div>
+                        <div class="absolute -top-10 text-[#909090] text-lg font-normal">วันที่เลือก</div>
+                    </div>
+                    {% else %}
+                    <div class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
+                        <div class="text-center text-[32px] font-medium">27</div>
+                        <div class="text-center text-lg font-normal">พฤ.</div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="rotate-180">
+                
+            </div>
+            
+            
+        </div>
+        
+    </div>
+    
+    <div class="container m-5 flex space-x-6 justify-center items-center p-5 bg-yellow-500">
+        <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold bg-pink-500" id="formattedDate"></div>
+    </div>
+
+
+    <!-- 
+    <div class="left-[652px] top-[339px] absolute text-center text-[#909090] text-lg font-normal">กรุณาเลือกวันนัดหมายที่ต้องการ</div>
+    <div class="left-[146px] top-[733px] absolute text-[#909090] text-lg font-normal font-['Kanit'] leading-[55px]">กรุณาเลือกเวลานัดหมาย</div>
+    <div class="left-[149px] top-[1419px] absolute text-[#909090] text-lg font-normal font-['Kanit'] leading-[55px]">กรุณากรอกรายละเอียดเพื่อการรักษาที่ถูกต้อง</div>
+    
+    <div class="w-[1149px] h-[467px] left-[145px] top-[816px] absolute">
+      <div class="w-[169px] h-[55px] left-0 top-0 absolute">
+        <div class="w-[169px] h-[55px] left-0 top-0 absolute bg-[#e1f6f5] rounded-[20px]"></div>
+        <div class="w-[130px] h-[55px] left-[20px] top-0 absolute">
+          <div class="left-0 top-0 absolute text-[#3d5279] text-lg font-normal font-['Kanit'] leading-[55px]">10:00</div>
+          <div class="left-[91px] top-0 absolute text-[#3d5279] text-lg font-normal font-['Kanit'] leading-[55px]">10:10</div>
+          <img class="w-[22px] h-[22px] left-[57px] top-[17px] absolute" src="https://via.placeholder.com/22x22" />
+        </div>
+      </div>
+    </div>
+
+    <div class="left-[618px] top-[976px] absolute text-center"><span class="text-[#909090] text-xl font-normal font-['Kanit'] leading-[55px]">12:00 - 13:00 น. </span><span class="text-[#909090] text-xl font-normal font-['Kanit'] underline leading-[55px]">พักเที่ยง</span></div> -->
+
+</div>
 {% endblock %}
