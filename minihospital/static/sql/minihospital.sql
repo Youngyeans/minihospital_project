@@ -255,6 +255,7 @@ INSERT INTO public.django_admin_log (id, action_time, object_id, object_repr, ac
 INSERT INTO public.django_session (session_key, session_data, expire_date) VALUES ('d7814pru2b1pz6noditbglmxudmp5ibs', 'e30:1syHoF:hHeVCWLLltisGrmSAzDE3NKRNUq_bDq8S7uRixv_9mU', '2024-10-23 04:31:59.140998+07');
 INSERT INTO public.django_session (session_key, session_data, expire_date) VALUES ('gypr4nzw4gkuex89nh6ryvzx736hodfr', '.eJxVjDsOwjAQBe_iGlnrb2xKes5grXcdHECOFCcV4u4QKQW0b2beSyTc1pq2XpY0sTgLJU6_W0Z6lLYDvmO7zZLmti5TlrsiD9rldebyvBzu30HFXr-19yajt7aQNz4E0DyUSJqNGkgZcD6rEUE7ChwKWQAVgrOsmU1EiKN4fwDHGDc9:1syaCb:lHSdIEZM3KDdEsaqpyu7dlShCGtwM3s5uxxMaTSMESM', '2024-10-24 00:10:21.489556+07');
 
+SELECT setval(pg_get_serial_sequence('django_admin_log', 'id'), (SELECT MAX(id) FROM django_admin_log));
 
 
 -- Completed on 2024-10-10 01:57:36
