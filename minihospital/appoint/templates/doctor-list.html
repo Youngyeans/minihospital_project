@@ -65,22 +65,21 @@
     <div class="w-full flex flex-col justify-center items-center">
         
         <div class="mt-6 grid grid-cols-3 gap-10">
-            <!-- Doctor card (repeat this block for each doctor card) -->
-            {% for doc in doctor_list %}
-            <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 mt-24 shadow-box relative bg-white w-[425px] h-[234px] rounded-[20px] border border-[#eaeaea] flex flex-col justify-center items-center">
-                <div class="absolute -top-20 w-[153px] h-[153px] bg-[#e1f6f5] rounded-full">
-                    <img class="rounded-full" width="153" height="153" src="{{ doc.doctor_image.url }}" />
-                </div>
-                <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
-                <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
-                <a href="{% url 'appoint:appointment' doc.id %}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
-                    <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
-                    <div class="text-center text-base font-normal">รายละเอียด</div>
-                </a>
-            </div>
             
-
+            {% for doc in doctor_list %}
+                <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 mt-24 shadow-box relative bg-white w-[425px] h-[234px] rounded-[20px] border border-[#eaeaea] flex flex-col justify-center items-center">
+                    <div class="absolute -top-20 w-[153px] h-[153px] bg-[#e1f6f5] rounded-full">
+                        <img class="rounded-full" width="153" height="153" src="{{ doc.doctor_image.url }}" />
+                    </div>
+                    <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
+                    <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
+                    <a href="{% url 'appoint:appointment' doc.id %}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
+                        <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
+                        <div class="text-center text-base font-normal">รายละเอียด</div>
+                    </a>
+                </div>
             {% endfor %}
+
         </div>
 
         <div class="flex p-5 space-x-6 justify-center items-center m-7">

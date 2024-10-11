@@ -10,8 +10,11 @@ const datepicker = flatpickr("#startDate", {
 });
 
 // ฟังก์ชันในการเปิด date picker เมื่อกดที่รูปภาพ
-function openDatePicker() {
-    datepicker.open();
+function openDatePicker(inputId) {
+    const dateInput = document.getElementById(inputId);
+    if (dateInput) {
+        dateInput._flatpickr.open();
+    }
 }
 
 // ฟังก์ชันแปลงวันที่เป็นรูปแบบไทย
@@ -27,19 +30,38 @@ function formatThaiDate(date) {
     return `วันที่ ${day} ${month} ${year}`;
 }
 
-window.onload = function() {
-    const today = document.getElementById("startDate").value;
-    // const today = {{ today|safe }};
-    console.log(today)
-    if (today) {
-        const parsedToday = flatpickr.parseDate(today, "d/m/Y"); // ใช้ flatpickr ในการแปลงวันที่จาก input
-        if (parsedToday) {
-            const formattedDate = formatThaiDate(parsedToday);
-            console.log(formattedDate)
-            document.getElementById("formattedDate").textContent = formattedDate;
-        }
+// window.onload = function() {
+//     const today = document.getElementById("startDate").value;
+//     // const today = {{ today|safe }};
+//     console.log(today)
+//     if (today) {
+//         const parsedToday = flatpickr.parseDate(today, "d/m/Y"); // ใช้ flatpickr ในการแปลงวันที่จาก input
+//         if (parsedToday) {
+//             const formattedDate = formatThaiDate(parsedToday);
+//             console.log(formattedDate)
+//             document.getElementById("formattedDate").textContent = formattedDate;
+//         }
+//     }
+// };
+
+document.addEventListener('DOMContentLoaded', function() {
+    // กำหนด flatpickr ให้กับ input และตั้งค่า defaultDate เป็นค่าที่ได้จากเซิร์ฟเวอร์
+    flatpickr("#startDate", {
+        dateFormat: "d/m/Y",
+        defaultDate: document.getElementById('startDate').value // ใช้ค่าใน input ที่ถูกตั้งไว้ใน server-side
+    });
+
+    // ดึงค่าจาก input เพื่อแปลงเป็นวันที่ในรูปแบบที่ต้องการ
+    const todayValue = document.getElementById('startDate').value;
+    const parsedToday = flatpickr.parseDate(todayValue, "d/m/Y");
+
+    if (parsedToday) {
+        // แปลงวันที่เป็นรูปแบบไทย
+        const formattedDate = formatThaiDate(parsedToday);
+        console.log(formattedDate);
+        document.getElementById("formattedDate").textContent = formattedDate;
     }
-};
+});
 
 function updateDates() {
     console.log("date select")
@@ -73,3 +95,12 @@ function updateDates() {
         dayElements.textContent = dayName;
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#startDate", {
+        dateFormat: "d/m/Y"
+    });
+    flatpickr("#sympDate", {
+        dateFormat: "d/m/Y"
+    });
+});
