@@ -7,5 +7,5 @@ urlpatterns = [
     path("appointment-today/", AppointTodayView.as_view(), name="appoint-today"),
     path("doctor-list/", DoctorListView.as_view(), name="doctor-list"),
     path("createdoctor/", CreateDoctorView.as_view(), name="createdoctor"),
-    path("doctor/appointment/", DoctorAppointmentView.as_view(), name="appointment"),
+    path("doctor/<int:doctor_id>/appointment/", DoctorAppointmentView.as_view(), name="appointment"),
 ]

@@ -76,10 +76,14 @@ class CreateDoctorView(View):
     
 class DoctorAppointmentView(View):
 
-    def get(self, request):
-        today = date.today() 
-        week = range(7)
+    def get(self, request, doctor_id):
+        doc = Doctor.objects.get(pk=doctor_id)
+        today = date.today().strftime('%d/%m/%Y')
+        week = range(1,8)
         context ={
+            'doc':doc,
+            'start_time': doc.start_time.strftime("%H:%M"),
+            'end_time': doc.end_time.strftime("%H:%M"),
             'week' : week,
             'today': today,
         }

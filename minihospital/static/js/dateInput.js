@@ -40,3 +40,36 @@ window.onload = function() {
         }
     }
 };
+
+function updateDates() {
+    console.log("date select")
+    // รับค่าจาก input
+    const input = document.getElementById('startDate').value;
+    // แยกวันที่จากรูปแบบ dd/mm/yyyy
+    const parts = input.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // เดือนเริ่มนับจาก 0 ใน JS
+    const year = parseInt(parts[2], 10);
+
+    const startDate = new Date(year, month, day);
+
+    // รับ element ที่จะแสดงผล
+    const dateGrid = document.getElementById('dateGrid');
+    // const dateElements = dateGrid.getElementsByID('date'+i);
+    // const dayElements = dateGrid.getElementsByID('day'+i);
+
+    // อัปเดตวันที่และชื่อวันในแต่ละช่อง
+    for (let i = 1; i < 8; i++) {
+        const dateElements = dateGrid.getElementsByID('date'+i);
+        const dayElements = dateGrid.getElementsByID('day'+i);
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+
+        // อัปเดตวันที่
+        dateElements.textContent = currentDate.getDate();
+        
+        // อัปเดตชื่อวัน (เช่น Mon, Tue)
+        const dayName = currentDate.toLocaleDateString('en-GB', { weekday: 'short' });
+        dayElements.textContent = dayName;
+    }
+}
