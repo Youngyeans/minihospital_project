@@ -18,43 +18,62 @@
                     logo
                 </div>
                 <div class="flex space-x-9">
-                    <div class="flex items-center space-x-9">
+                    {% if user.doctor %}
+                        <div class="flex items-center space-x-9">
+            
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/schedule.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'appoint:doc_appointment' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">นัดหมายผู้ป่วย</a>
+                            </div>
 
-                        <div class="flex space-x-3 ">
-                            <img src="{% static 'image/home.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'main:home' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">หน้าแรก</a>
                         </div>
+                    {% else %}
+                        <div class="flex items-center space-x-9">
 
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/doctor.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'appoint:doctor-list' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ค้นหาแพทย์</a>
-                        </div>
-        
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/schedule.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'appoint:appoint-today' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">คิวพบแพทย์</a>
-                        </div>
-        
-                        <div class="flex space-x-3">
-                            <img src="{% static 'image/plus.png' %}" width="22" height="22" class="nav-icon brightness-200">
-                            <a href="{% url 'main:contact' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ติดต่อเรา</a>
-                        </div>
+                            <div class="flex space-x-3 ">
+                                <img src="{% static 'image/home.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'main:home' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">หน้าแรก</a>
+                            </div>
 
-                    </div>
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/doctor.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'appoint:doctor-list' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ค้นหาแพทย์</a>
+                            </div>
+            
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/schedule.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'appoint:appoint-today' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">คิวพบแพทย์</a>
+                            </div>
+            
+                            <div class="flex space-x-3">
+                                <img src="{% static 'image/plus.png' %}" width="22" height="22" class="nav-icon brightness-200">
+                                <a href="{% url 'main:contact' %}" class="nav-text text-white text-[#494949] hover:text-[#15CDCB]">ติดต่อเรา</a>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
                     {% if user.is_authenticated %}
                     <div class="relative flex flex-col justify-center">
                         <button onclick="toggleDropdown()" class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">
                             <img src="{% static 'image/user (3).png' %}" width="22" height="22">
-                            <p class="text-white">คุณ {{ user.first_name }}</p>
+                            <p class="text-white">{% if user.doctor %}{{ user.doctor.prefix }}{% else %}คุณ{% endif %} {{ user.first_name }}</p>
                         </button>
 
-                        <div id="dropdownMenu" class="hidden absolute -bottom-[130px] rounded-[20px] bg-white border border-[#eaeaea] grid grid-cols-1 gap-1 py-3">
-                            <a href="{% url 'patient:profile' %}"class="text-[#494949] text-base font-normal mx-5">โปรไฟล์ผู้ใช้</a>
-                            <hr class="w-full border border-[#eaeaea]">
-                            <a href="{% url 'treat:treatment-list' %}" class="text-[#494949] text-base font-normal mx-5">ประวัติการรักษา</a>
-                            <hr class="w-full border border-[#eaeaea]">
-                            <a href="{% url 'authen:logout' %}" class="text-[#15cdcb] text-base font-normal underline mx-5">ออกจากระบบ</a>
-                        </div>  
+                        {% if not user.doctor %}
+                            <div id="dropdownMenu" class="hidden absolute -bottom-[130px] rounded-[20px] bg-white border border-[#eaeaea] grid grid-cols-1 gap-1 py-3">
+                                <a href="{% url 'patient:profile' %}"class="text-[#494949] text-base font-normal mx-5">โปรไฟล์ผู้ใช้</a>
+                                <hr class="w-full border border-[#eaeaea]">
+                                <a href="{% url 'treat:treatment-list' %}" class="text-[#494949] text-base font-normal mx-5">ประวัติการรักษา</a>
+                                <hr class="w-full border border-[#eaeaea]">
+                                <a href="{% url 'authen:logout' %}" class="text-[#15cdcb] text-base font-normal underline mx-5">ออกจากระบบ</a>
+                            </div>
+                        {% else %}
+                            <div id="dropdownMenu" class="hidden absolute -bottom-[60px] rounded-[20px] bg-white border border-[#eaeaea] grid grid-cols-1 gap-1 py-3">
+                                <a href="{% url 'authen:logout' %}" class="text-[#15cdcb] text-base font-normal underline mx-5">ออกจากระบบ</a>
+                            </div> 
+                        {% endif %}
+
                     </div>
                     {% else %}
                         <a href="{% url 'authen:login' %}" class="flex space-x-4 text-base font-normal font-['Kanit'] px-6 py-3 rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB]">

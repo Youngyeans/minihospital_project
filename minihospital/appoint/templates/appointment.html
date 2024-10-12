@@ -19,9 +19,6 @@
         <div class="text-center text-[#909090] text-[20px] font-normal">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
     </div>
 
-    <!-- <div class="w-[963px] h-[0px] left-[239px] top-[976px] absolute border border-[#eaeaea]"></div>
-    <div class="w-[963px] h-[0px] left-[239px] top-[1036px] absolute border border-[#eaeaea]"></div> -->
-    <!-- <div class="left-[150px] top-[1380px] absolute text-[#3d5279] text-[32px] font-medium font-['Kanit'] leading-[55px]">อาการ   </div> -->
     <form method="post">
         {% csrf_token %}
         <div class="text-red-500 mb-4">
@@ -31,7 +28,10 @@
         <div class="text-red-500 mb-4">
             {{ form.errors }}
         </div>
+
         <div class="container m-5 flex space-x-6 justify-center items-center p-5">
+
+            <!-- ข้อมูลหมอ -->
             <div class="bg-white rounded-[20px] shadow w-[600px] p-10">
                 <div class="flex space-x-4">
                     <div class="w-full h-auto mt-2">
@@ -58,6 +58,7 @@
                 <div class="text-[#909090] text-lg font-normal">{{ doc.description }} </div>
             </div>
             
+            <!-- กรอกวันที่ต้องการนัด -->
             <div class="h-auto w-full flex flex-col items-center">
                 <div class="w-full flex space-x-5 items-center justify-between">
                     <div class="text-center text-[#3d5279] text-[32px] font-semibold">นัดหมายแพทย์</div>
@@ -65,7 +66,6 @@
                         {{ form.appointment_date }}
                         <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
                     </div>
-                    <script src="{% static 'js/dateInput.js' %}"></script>
 
                 </div>
                 <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันนัดหมายที่ต้องการ</div>
@@ -76,22 +76,10 @@
                     
                     <div id="dateGrid" class="grid grid-cols-7 grid-cols-1 gap-[26px] m-16">
                         {% for i in week %}
-                        <!-- {% if i == 1 %}
-                        <div class="relative bg-[#15CDCB] text-white rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div class="text-center text-lg font-normal">พฤ.</div>
-                            <div class="absolute -top-10 text-[#909090] text-lg font-normal">วันที่เลือก</div>
-                        </div>
-                        {% else %}
-                        <div class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div class="text-center text-lg font-normal">พฤ.</div>
-                        </div>
-                        {% endif %}-->
-                        <div id="date{{i}}" class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div id="day{{i}}" class="text-center text-lg font-normal">พฤ.</div>
-                        </div>
+                            <div class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
+                                <div id="day{{i}}" class="text-center text-lg font-normal"></div>
+                                <div id="date{{i}}" class="text-center text-[32px] font-medium"></div>
+                            </div>
                         {% endfor %}
                     </div>
                     
@@ -108,8 +96,8 @@
             <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold" id="formattedDate"></div>
             <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณาเลือกเวลานัดหมาย</div>
 
+            <!-- เลือกเวลานัด  -->
             {{ form.appointment_time }}
-
             <div class="grid grid-cols-6 gap-2 my-16">
                 {% for start_time, end_time, status in updated_times %}
                     {% if start_time|slice:":2" == "12" %}
@@ -158,34 +146,39 @@
                 });
                 </script>
 
-        <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold">อาการ</div>
-        <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณากรอกรายละเอียดเพื่อการรักษาที่ถูกต้อง</div>
+            <!-- กรอกอาการ -->
+            <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold">อาการ</div>
+            <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณากรอกรายละเอียดเพื่อการรักษาที่ถูกต้อง</div>
 
-        <div class="w-full flex justify-start">
-            <div class="flex justify-center items-center grid grid-cols-[auto,1fr] gap-y-5">
-    
-                <div class="text-[#494949] text-lg font-normal">อาการ :</div>
-                {{ form.symptom }}
-                
-                <div class="text-[#494949] text-lg font-normal">มีอาการตั้งแต่  : </div>
-                <div class="w-[350px] flex items-center relative">
-                    {{ form.start_sympDate }}
-                    <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('sympDate')"  class="cursor-pointer absolute right-6" width="27" height="27">
+            <div class="w-full flex justify-start">
+                <div class="flex justify-center items-center grid grid-cols-[auto,1fr] gap-y-5">
+        
+                    <div class="text-[#494949] text-lg font-normal">อาการ :</div>
+                    {{ form.symptom }}
+                    
+                    <div class="text-[#494949] text-lg font-normal">มีอาการตั้งแต่  : </div>
+                    <div class="w-[350px] flex items-center relative">
+                        {{ form.start_sympDate }}
+                        <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('sympDate')"  class="cursor-pointer absolute right-6" width="27" height="27">
+                    </div>
+        
+                    <div class="text-[#494949] text-lg font-normal">อุณภูมิร่างกาย : </div>
+                    <div class="relative flex items-center w-[350px]">
+                        {{ form.temperature }}
+                        <div class="absolute text-[#c7c7c7] text-base font-normal right-[35px]">องศาเซลเซียส</div>
+                    </div>
+        
                 </div>
-    
-                <div class="text-[#494949] text-lg font-normal">อุณภูมิร่างกาย : </div>
-                <div class="relative flex items-center w-[350px]">
-                    {{ form.temperature }}
-                    <!-- <input placeholder="xx.x" class="py-3 px-6 w-full text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full"> -->
-                    <div class="absolute text-[#c7c7c7] text-base font-normal right-[35px]">องศาเซลเซียส</div>
-                </div>
-    
             </div>
-        </div>
 
-        <button type="submit" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
-    
+            <button type="submit" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
+        </div>
     </form>
 </div>
+
+<script type="application/json" id="docDaysData">
+    {{ doc_days_json }}
+</script>
+<script src="{% static 'js/dateInput.js' %}"></script>
 
 {% endblock %}
