@@ -142,10 +142,8 @@ class AppointmentView(LoginRequiredMixin,View):
         doc = Doctor.objects.get(pk=doctor_id)
         week = range(1, 8)
 
-        # ลิสต์สำหรับวันแบบเต็ม
+        # ลิสต์สำหรับวันแบบเต็มและแบบตัวย่อ
         weekdays_full = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-
-        # ลิสต์สำหรับวันแบบตัวย่อ
         weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
 
         # แยกวันที่เริ่มต้นและสิ้นสุด
@@ -161,8 +159,38 @@ class AppointmentView(LoginRequiredMixin,View):
         else:
             doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
 
-        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
-        doc_days_json = mark_safe(json.dumps(doc.day))
+        # Dictionary สำหรับแปลงตัวย่อภาษาอังกฤษเป็นตัวย่อภาษาไทย
+        day_translation = {
+            "Mon": "จ.",
+            "Tue": "อ.",
+            "Wed": "พ.",
+            "Thu": "พฤ.",
+            "Fri": "ศ.",
+            "Sat": "ส.",
+            "Sun": "อา."
+        }
+
+        # ค้นหาวันแรกที่หมอว่าง (เริ่มจากวันนี้)
+        today = date.today()
+        days_ahead = 0
+        max_days_to_check = 7  # จำกัดการวนลูปภายใน 7 วันถัดไป
+        default_start_date = None  # ค่าเริ่มต้น
+
+        while days_ahead < max_days_to_check:
+            day_eng = today.strftime("%a")  # ได้ตัวย่อภาษาอังกฤษ เช่น "Mon"
+            day_short = day_translation.get(day_eng)  # แปลงเป็นตัวย่อภาษาไทย เช่น "จ."
+            
+            print(f"กำลังตรวจสอบวันที่: {today}, day_short: {day_short}")
+
+            if day_short in doc.day:
+                default_start_date = today.strftime("%d/%m/%Y")  # แปลงวันที่ให้เป็นรูปแบบ dd/mm/yyyy
+                break
+            today += timedelta(days=1)  # ถ้าหมอไม่ว่างในวันนี้ ให้เช็ควันถัดไป
+            days_ahead += 1  # เพิ่มตัวนับจำนวนวันที่ตรวจสอบ
+
+        if not default_start_date:
+            # กรณีที่ไม่เจอวันว่างเลยใน 7 วันถัดไป
+            default_start_date = date.today().strftime('%d/%m/%Y')  # ใช้วันที่ปัจจุบันแทน
 
         # เช็คหน้าก่อนว่ามาจากหน้าไหน
         referrer = request.META.get('HTTP_REFERER')
@@ -173,7 +201,7 @@ class AppointmentView(LoginRequiredMixin,View):
             elif "doctor-list" in referrer:
                 previous = "รายชื่อแพทย์"
         
-        form = AppointmentForm()
+        form = AppointmentForm(initial={'appointment_date': default_start_date})
 
         # กำหนดค่าเริ่มต้นและช่วงเวลา
         interval = 10  # นาที
@@ -209,6 +237,9 @@ class AppointmentView(LoginRequiredMixin,View):
             # อัปเดต current_time เพื่อทำงานต่อในรอบถัดไป
             current_time = next_time
 
+        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
+        doc_days_json = mark_safe(json.dumps(doc.day))
+
         # ส่งข้อมูลไปยัง template
         context = {
             'doc': doc,  # ข้อมูลหมอ
@@ -219,10 +250,10 @@ class AppointmentView(LoginRequiredMixin,View):
             'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template
         }
 
         return render(request, 'appointment.html', context)
-    
     def post(self, request, doctor_id):
         form = AppointmentForm(request.POST, request.FILES)
         

@@ -96,9 +96,8 @@ class AppointmentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # กำหนดค่าเริ่มต้นสำหรับ appointment_date เป็นวันที่ปัจจุบัน
-        if 'initial' not in kwargs:
-            self.fields['appointment_date'].initial = date.today().strftime('%d/%m/%Y')
+        # ถ้ามีการส่งค่าจาก initial ให้ใช้เป็นค่าตั้งต้น
+        self.fields['appointment_date'].widget.attrs['value'] = self.initial.get('appointment_date', '')
 
     def clean(self):
         cleaned_data = super().clean()
