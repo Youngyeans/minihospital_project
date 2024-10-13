@@ -19,6 +19,7 @@
         <div class="text-center text-[#909090] text-[20px] font-normal">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
     </div>
 
+
     <form method="post">
         {% csrf_token %}
         <div class="text-red-500 mb-4">
@@ -144,7 +145,7 @@
                         console.log(`Selected appointment time: ${appointmentTime}`);
                     });
                 });
-                </script>
+            </script>
 
             <!-- กรอกอาการ -->
             <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold">อาการ</div>
@@ -171,8 +172,57 @@
                 </div>
             </div>
 
-            <button type="submit" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
+            <button onclick="togglePopup()" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
+            
+            <!-- Pop-up Container -->
+            <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
+                    <div class="text-start text-[#3d5279] text-[32px] font-semibold">ยืนยันการนัดหมาย</div>
+                    <div class="text-start text-[#909090] text-base font-normal">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</div>
+                    <div class="flex space-x-16 mt-10">
+                        <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
+                            <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
+                        </div>
+
+                        <div>
+                            <div class="text-[#494949] text-base font-normal">ผู้ป่วย : {{ user.patient.prefix }} {{ user.first_name }} {{ user.last_name }}</div>
+                            <div class="text-[#494949] text-base font-normal">แพทย์ : {{ doc.prefix }} {{ doc.user.first_name }} {{ doc.user.last_name }}</div>
+                            <div class="text-[#494949] text-base font-normal">แผนก :
+                                <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
+                                    {{ doc.department }}
+                                </div>
+                            </div>
+                            <div class="text-[#494949] text-base font-normal">วันที่นัดหมาย : 28 กันยายน 2567</div>
+                            <div class="text-[#494949] text-base font-normal">เวลานัดหมาย : 11:20 - 11:30 น.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center mt-10">
+                        <button type="submit" class="py-2 px-12 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] inline-block text-center text-white text-xl font-medium">
+                            ยืนยันการนัดหมาย
+                        </button>
+                    </div>
+
+                    <!-- ปุ่มปิด pop-up -->
+                    <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
+                </div>
+            </div>
+
+            <script>
+                function togglePopup() {
+                    const popup = document.getElementById('popup');
+                    popup.classList.toggle('hidden');
+                }
+            
+                // ผูก event กับปุ่ม "จองคิวพบแพทย์"
+                document.querySelector('.bg-gradient-to-r').addEventListener('click', function(event) {
+                    event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
+                    togglePopup(); // แสดง pop-up
+                });
+            </script>
+        
         </div>
+        
     </form>
 </div>
 

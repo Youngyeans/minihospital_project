@@ -58,6 +58,15 @@ class DoctorForm(ModelForm):
     
 
 class AppointmentForm(ModelForm):
+    appointment_date = forms.DateField(
+        input_formats=['%d/%m/%Y'],  # รองรับรูปแบบ dd/mm/yyyy
+        widget=TextInput(attrs={
+            'id': 'startDate',
+            'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
+            'placeholder': 'dd/mm/yyyy',
+            'oninput': 'updateDates()',
+        })
+    )
 
     class Meta:
         model = Appointment
@@ -70,12 +79,6 @@ class AppointmentForm(ModelForm):
         ]
         widgets = {
             "appointment_time": HiddenInput(),
-            'appointment_date': TextInput(attrs={
-                'id': 'startDate',
-                'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
-                'placeholder': 'dd/mm/yyyy',
-                'oninput': 'updateDates()',
-            }),
             'symptom': TextInput(attrs={
                 'class': 'w-[500px] py-3 px-6 w-[50%] text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full',
                 'placeholder': 'เช่น มีไข้ ปวดหัว ตัวร้อน',
@@ -88,10 +91,9 @@ class AppointmentForm(ModelForm):
             'temperature': NumberInput(attrs={
                 'class': 'py-3 px-6 w-full text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full',
                 'placeholder': 'เช่น 36.5',
-                'step': '0.01',  # ระบุ step เพื่อกำหนดค่าที่เพิ่มทีละ 0.01
-                'min': '0', 
+                'step': '0.01',
+                'min': '0',
             }),
-
         }
 
     def __init__(self, *args, **kwargs):
@@ -106,7 +108,7 @@ class AppointmentForm(ModelForm):
 
         if appointment_date and appointment_time:
             appointment_datetime = datetime.combine(appointment_date, appointment_time)
-            
+
             if appointment_datetime < datetime.now():
                 raise forms.ValidationError('ไม่สามารถเลือกวันที่และเวลาย้อนหลังได้')
 

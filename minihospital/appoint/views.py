@@ -256,6 +256,9 @@ class AppointmentView(LoginRequiredMixin,View):
         return render(request, 'appointment.html', context)
     def post(self, request, doctor_id):
         form = AppointmentForm(request.POST, request.FILES)
+        print(f"POST data: {request.POST}")
+
+        print(f"Appointment Date from POST: {request.POST.get('appointment_date')}")
         
          # ดึงข้อมูลหมอจากฐานข้อมูล
         doc = Doctor.objects.get(pk=doctor_id)
@@ -320,7 +323,6 @@ class AppointmentView(LoginRequiredMixin,View):
             elif "doctor-list" in referrer:
                 previous = "รายชื่อแพทย์"
         
-        form = AppointmentForm(initial={'appointment_date': default_start_date})
 
         # กำหนดค่าเริ่มต้นและช่วงเวลา
         interval = 10  # นาที
