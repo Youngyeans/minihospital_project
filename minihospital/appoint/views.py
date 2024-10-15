@@ -159,6 +159,23 @@ class AppointmentView(LoginRequiredMixin,View):
         else:
             doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
 
+        print(f"doc.day= {doc.day}")
+
+        today_day = date.today().strftime("%A")
+
+        day_translation = {
+            "Monday": "จันทร์",
+            "Tuesday": "อังคาร",
+            "Wednesday": "พุธ",
+            "Thursday": "พฤหัส",
+            "Friday": "ศุกร์",
+            "Saturday": "เสาร์",
+            "Sunday": "อาทิตย์"
+        }
+
+        today_day = day_translation.get(today_day)
+        print(today_day)
+
         # Dictionary สำหรับแปลงตัวย่อภาษาอังกฤษเป็นตัวย่อภาษาไทย
         day_translation = {
             "Mon": "จ.",
@@ -250,7 +267,8 @@ class AppointmentView(LoginRequiredMixin,View):
             'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
-            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template
+            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template,
+            'today_day' : today_day
         }
 
         return render(request, 'appointment.html', context)
