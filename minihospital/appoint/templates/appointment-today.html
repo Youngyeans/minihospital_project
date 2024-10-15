@@ -103,12 +103,17 @@
                     
  
                         <div class="w-full mt-4 flex justify-center items-center">
-                            <a href="{% url 'appoint:appointment' doc.id %}" class="hover:from-[#15CDCB] hover:to-[#15CDCB] cursor-pointer duration-300 transition ease-in-out delay-150 w-[90%] py-3 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium">
+                            <a href="{% url 'appoint:appointment' doc.id current_date %}" class="hover:from-[#15CDCB] hover:to-[#15CDCB] cursor-pointer duration-300 transition ease-in-out delay-150 w-[90%] py-3 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium">
                                 จองคิวพบแพทย์
                             </a>
                         </div>
                     </div>
                 {% endif %}
+                    
+            {% empty %}
+
+                    
+            
             {% endfor %}
         </div>
 

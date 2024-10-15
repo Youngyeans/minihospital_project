@@ -63,9 +63,12 @@
             <div class="h-auto w-full flex flex-col items-center">
                 <div class="w-full flex space-x-5 items-center justify-between">
                     <div class="text-center text-[#3d5279] text-[32px] font-semibold">นัดหมายแพทย์</div>
-                    <div class="w-[350px] flex items-center relative">
-                        {{ form.appointment_date }}
-                        <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
+                    <div class="flex space-x-5 items-center">
+                        <div class="w-[350px] flex items-center relative">
+                            {{ form.appointment_date }}
+                            <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
+                        </div>
+                        <button onclick="sendLink()" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-[16px] font-medium px-4  py-2">เลือกวันนัด</button>
                     </div>
 
                 </div>
@@ -90,6 +93,43 @@
                 
                 
             </div>
+
+            <script>
+                function sendLink() {
+                    // รับค่าจากฟิลด์ startDate
+                    const input = document.getElementById('startDate').value;
+                    
+                    // ตรวจสอบว่า input มีค่า
+                    if (!input) {
+                        alert("กรุณากรอกวันที่ก่อนส่งลิงค์");
+                        return;
+                    }
+                    
+                    // แยกวันที่จากรูปแบบ dd/mm/yyyy
+                    const parts = input.split('/');
+                    if (parts.length !== 3) {
+                        alert("รูปแบบวันที่ไม่ถูกต้อง กรุณากรอกวันที่ในรูปแบบ dd/mm/yyyy");
+                        return;
+                    }
+                    
+                    const day = parts[0];
+                    const month = parts[1];
+                    const year = parts[2];
+            
+                    // แปลงวันที่เป็นรูปแบบ Y-m-d
+                    const formattedDate = `${year}-${month}-${day}`;
+                    
+                    // สร้าง URL ใหม่ (คุณสามารถกำหนดรูปแบบ URL ได้ตามที่ต้องการ)
+                    const doctorId = "{{ doc.id }}";  // รับค่า doctor.id จาก Django หรือจะใช้ค่าอื่นที่คุณต้องการ
+                    const newUrl = `/hopelife/doctor/${doctorId}/appointment/${formattedDate}/`;  // เปลี่ยน URL ตามที่คุณต้องการ
+            
+                    // ตรวจสอบว่า URL ถูกต้องหรือไม่
+                    console.log("New URL:", newUrl);
+                    
+                    // เปลี่ยนหน้าไปยัง URL ใหม่
+                    window.location.href = newUrl;
+                }
+            </script>
             
         </div>
         
@@ -108,19 +148,22 @@
                             </div>
                         {% endif %}
                     {% else %}
-                        {% if status == "in_range" %}
-                            <div class="time-slot bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
-                                <div class="text-[#3d5279] text-lg font-normal">{{ start_time }}</div>
-                                <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
-                                <div class="text-[#3d5279] text-lg font-normal">{{ end_time }}</div>
-                            </div>
-                        {% else %}
-                            <div class="bg-[#EBEBEB] rounded-[20px] flex space-x-3 py-3 px-5">
-                                <div class="text-[#C8C8C8] text-lg font-normal">{{ start_time }}</div>
-                                <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
-                                <div class="text-[#C8C8C8] text-lg font-normal">{{ end_time }}</div>
-                            </div>
-                        {% endif %}
+
+                            {% if status == "in_range" %}
+                                <div class="time-slot bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
+                                    <div class="text-[#3d5279] text-lg font-normal">{{ start_time }}</div>
+                                    <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
+                                    <div class="text-[#3d5279] text-lg font-normal">{{ end_time }}</div>
+                                </div>
+                            {% else %}
+                                <div class="bg-[#EBEBEB] rounded-[20px] flex space-x-3 py-3 px-5">
+                                    <div class="text-[#C8C8C8] text-lg font-normal">{{ start_time }}</div>
+                                    <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
+                                    <div class="text-[#C8C8C8] text-lg font-normal">{{ end_time }}</div>
+                                </div>
+                            {% endif %}
+
+
                     {% endif %}
                 {% endfor %}
             </div>
@@ -172,7 +215,7 @@
                 </div>
             </div>
 
-            <button onclick="togglePopup()" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
+            <button id="validate" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
             
             <!-- Pop-up Container -->
             <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -192,7 +235,7 @@
                                     {{ doc.department }}
                                 </div>
                             </div>
-                            <div class="text-[#494949] text-base font-normal">วันที่นัดหมาย : 28 กันยายน 2567</div>
+                            <div id="validateDate" class="text-[#494949] text-base font-normal">วันที่นัดหมาย : 28 กันยายน 2567</div>
                             <div class="text-[#494949] text-base font-normal">เวลานัดหมาย : 11:20 - 11:30 น.</div>
                         </div>
                     </div>
@@ -211,13 +254,13 @@
             <script>
                 function togglePopup() {
                     const popup = document.getElementById('popup');
-                    popup.classList.toggle('hidden');
+                    popup.classList.toggle('hidden'); // ซ่อนหรือแสดง popup
                 }
             
                 // ผูก event กับปุ่ม "จองคิวพบแพทย์"
-                document.querySelector('.bg-gradient-to-r').addEventListener('click', function(event) {
+                document.getElementById('validate').addEventListener('click', function(event) {
                     event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
-                    togglePopup(); // แสดง pop-up
+                    togglePopup(); // แสดงหรือซ่อน pop-up
                 });
             </script>
         

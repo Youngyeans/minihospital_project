@@ -80,7 +80,7 @@
                     </div>
                     <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
                     <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
-                    <a href="{% url 'appoint:appointment' doc.id %}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
+                    <a href="{% url 'appoint:appointment' doc.id current_date%}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
                         <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
                         <div class="text-center text-base font-normal">รายละเอียด</div>
                     </a>
