@@ -68,6 +68,16 @@ class AppointmentForm(ModelForm):
         })
     )
 
+    start_sympDate = forms.DateField(
+        input_formats=['%d/%m/%Y'],  # รองรับรูปแบบ dd/mm/yyyy
+        widget=TextInput(attrs={
+            'id': 'sympDate',
+            'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
+            'placeholder': 'dd/mm/yyyy',
+            'required': 'required',
+        })
+    )
+
     class Meta:
         model = Appointment
         fields = [
@@ -82,18 +92,15 @@ class AppointmentForm(ModelForm):
             'symptom': TextInput(attrs={
                 'class': 'w-[500px] py-3 px-6 w-[50%] text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full',
                 'placeholder': 'เช่น มีไข้ ปวดหัว ตัวร้อน',
+                'required': 'required'
             }),
-            'start_sympDate': TextInput(attrs={
-                'id': 'sympDate',
-                'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
-                'placeholder': 'dd/mm/yyyy',
-            }),
-            'temperature': NumberInput(attrs={
+            'temperature': forms.NumberInput(attrs={
                 'class': 'py-3 px-6 w-full text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full',
                 'placeholder': 'เช่น 36.5',
                 'step': '0.01',
                 'min': '0',
-            }),
+                'required': 'required',
+            })
         }
 
     def __init__(self, *args, **kwargs):
@@ -105,11 +112,26 @@ class AppointmentForm(ModelForm):
         cleaned_data = super().clean()
         appointment_date = cleaned_data.get('appointment_date')
         appointment_time = cleaned_data.get('appointment_time')
+        start_sympDate = cleaned_data.get('start_sympDate')
+        temperature = cleaned_data.get('temperature')
+
+        print(f"start_sympDate = {start_sympDate}, appointment_date = {appointment_date}")
 
         if appointment_date and appointment_time:
             appointment_datetime = datetime.combine(appointment_date, appointment_time)
 
             if appointment_datetime < datetime.now():
-                raise forms.ValidationError('ไม่สามารถเลือกวันที่และเวลาย้อนหลังได้')
+                raise forms.ValidationError('วันและเวลาที่จองต้องไม่เป็นอดีต')
+            
+        if not start_sympDate:
+            raise forms.ValidationError('กรุณากรอกวันที่เริ่มมีอาการ')
+        else:
+            if start_sympDate > appointment_date:
+                raise forms.ValidationError('วันที่เริ่มมีอาการควรเป็นอดีต')
+        
+        if temperature > 37.2 or temperature < 36.1:
+            raise forms.ValidationError('อุณหภูมิร่างกายควรอยู่ในช่วงระหว่าง 36.1-37.2 องศาเซลเซียส')
 
         return cleaned_data
+    
+

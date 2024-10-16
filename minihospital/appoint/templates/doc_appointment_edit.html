@@ -13,11 +13,11 @@
 {% block content %}
 <div class="container-full flex flex-col justify-center items-center">
 
-    <div class="container m-5 flex space-x-6 justify-start items-center">
+    <!-- <div class="container m-5 flex space-x-6 justify-start items-center">
         <div class="text-[#909090] text-[20px] font-normal">{{ previous }}</div>
         <img class="" width="14" height="14" src="{% static 'image/play-button.png' %}" />
         <div class="text-center text-[#909090] text-[20px] font-normal">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
-    </div>
+    </div> -->
 
         <div class="container m-5 flex space-x-6 justify-center items-center p-5">
 
@@ -205,7 +205,7 @@
                 <div class="text-red-500 mb-4">
                     {{ form.errors }}
                 </div>
-                <div id="popup" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                <div id="popup" class="z-[101] fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                     <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
                         <div class="text-start text-[#3d5279] text-[32px] font-semibold">แก้ไขการนัดหมาย</div>
                         <div class="text-start text-[#909090] text-base font-normal">กรุณาแก้ไขข้อมูลให้ถูกต้อง</div>

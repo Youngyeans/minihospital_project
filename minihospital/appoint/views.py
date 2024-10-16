@@ -14,23 +14,12 @@ from django.core.paginator import Paginator
 from django.utils.safestring import mark_safe
 import json
 
-class AppointTodayView(View):
 
-    def get(self, request):
-        department = request.GET.get('department', 'ทั้งหมด')
-        current = datetime.now()
-        #current = datetime(2024, 10, 16, 9, 30)
-        current_time = current.time()
-        current_date = current.strftime('%Y-%m-%d')
-        doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time)
-        # doctor_list = Doctor.objects.all().order_by('id')
+# function
+def day(date, format):
 
-        if department and department != "ทั้งหมด":
-            doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time, department__name=department)
-            # doctor_list = doctor_list.filter(department__name=department)
-
-        today = date.today().strftime("%d/%m/%Y")
-        today_day = date.today().strftime("%A")
+    if (format == "full"):
+        today_day = date.strftime("%A")
 
         day_translation = {
             "Monday": "จันทร์",
@@ -41,31 +30,134 @@ class AppointTodayView(View):
             "Saturday": "เสาร์",
             "Sunday": "อาทิตย์"
         }
+    elif (format == "short"):
+        today_day = date.strftime("%a")
 
-        today_day = day_translation.get(today_day)
+        day_translation = {
+            "Mon": "จ.",
+            "Tue": "อ.",
+            "Wed": "พ.",
+            "Thu": "พฤ.",
+            "Fri": "ศ.",
+            "Sat": "ส.",
+            "Sun": "อา."
+        }
+
+    today_day = day_translation.get(today_day)
+
+    return today_day
+
+
+def doc_shift(doc, today_day, format):
+    weekdays = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
+    weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
+    start_day, end_day = doc.shift_day.split('-')
+    doc.day = []
+
+    start_index = weekdays.index(start_day)
+    end_index = weekdays.index(end_day)
+
+    if format == "full":
+        if start_index <= end_index:
+            doc.day = weekdays[start_index:end_index + 1]
+        else:
+            doc.day = weekdays[start_index:] + weekdays[:end_index + 1]
+
+    elif format == "short":
+        if start_index <= end_index:
+            doc.day = weekdays_short[start_index:end_index + 1]
+        else:
+            doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
+
+    return doc.day
+
+
+def paginator(request, list, num):
+    paginator = Paginator(list, num)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return page_obj 
+
+def beforeAppoint(request):
+    referrer = request.META.get('HTTP_REFERER')
+    previous = ""
+    if referrer:
+        if "appointment" in referrer:
+            previous = "คิวพบแพทย์"
+        elif "doctor-list" in referrer:
+            previous = "รายชื่อแพทย์"
+
+    return previous
+
+def doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time):
+    min = 10
+    updated_times = []
+    current_time = datetime.combine(appointment_date, datetime.strptime("08:00", "%H:%M").time())
+    end_time = datetime.combine(appointment_date, datetime.strptime("18:00", "%H:%M").time())
+
+    start_bound = datetime.combine(appointment_date, doc.start_time)
+    end_bound = datetime.combine(appointment_date, doc.end_time)
+
+    while current_time < end_time:
+        start_time_str = current_time.strftime("%H:%M")
+        next_time = current_time + timedelta(minutes=min)
+        end_time_str = next_time.strftime("%H:%M")
         
+        if appointment_day in doc.day:
+
+            if start_time_str in appoint_time :
+                updated_times.append((start_time_str, end_time_str, "appointment"))
+            elif (appointment_date.date() == today.date()):
+                if current_time < today:
+                    updated_times.append((start_time_str, end_time_str, "out_of_range"))
+                elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
+                    updated_times.append((start_time_str, end_time_str, "in_range"))
+                else:
+                    updated_times.append((start_time_str, end_time_str, "out_of_range"))
+            elif (appointment_date.date() < today.date()):
+                updated_times.append((start_time_str, end_time_str, "out_of_range"))
+            else:
+                updated_times.append((start_time_str, end_time_str, "in_range"))
+        else:
+            updated_times.append((start_time_str, end_time_str, "out_of_range"))
+        current_time = next_time
+
+    return updated_times
+
+def doc_appoint(doc, appointment_date):
+    appointments = Appointment.objects.filter(doctor=doc, appointment_date=appointment_date)
+    appoint_time = [
+        appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
+    ]
+
+    print(f"doc_appoint = {appoint_time}")
+
+    return appoint_time
+
+
+class AppointTodayView(View):
+
+    def get(self, request):
+        department = request.GET.get('department', 'ทั้งหมด')
+
+        current = datetime.now()
+        current_time = current.time()
+        current_date = current.strftime('%Y-%m-%d')
+        today = current.date().strftime("%d/%m/%Y")
+
+        doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time)
+        if department and department != "ทั้งหมด":
+            doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time, department__name=department)
+
+        today_day = day(current.date(), "full")
         for doc in doctor_list:
             doc.start_time = doc.start_time.strftime("%H:%M")
             doc.end_time = doc.end_time.strftime("%H:%M")
-        
-            weekdays = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-            start_day, end_day = doc.shift_day.split('-')
-            doc.day = []
-
-            start_index = weekdays.index(start_day)
-            end_index = weekdays.index(end_day)
-
-            if start_index <= end_index:
-                doc.day = weekdays[start_index:end_index + 1]
-            else:
-                doc.day = weekdays[start_index:] + weekdays[:end_index + 1]
-
+            doc.day = doc_shift(doc, today_day, "full")
         doctor_list_today = [doc for doc in doctor_list if today_day in doc.day]
-    
-        # ใช้ Paginator เพื่อแบ่งหน้า
-        paginator = Paginator(doctor_list_today, 6)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        
+        page_obj = paginator(request, doctor_list_today, 6)
 
         context ={
             'today': today,
@@ -79,17 +171,16 @@ class AppointTodayView(View):
 class DoctorListView(View):
 
     def get(self, request):
-        current = datetime(2024, 10, 16, 9, 30)
+        current = datetime.now()
         current_date = current.strftime('%Y-%m-%d')
-        department = request.GET.get('department', 'ทั้งหมด')  # ค่าเริ่มต้นเป็น 'ทั้งหมด'
+
+        department = request.GET.get('department', 'ทั้งหมด')
         doctor_list = Doctor.objects.all().order_by('id')
 
         if department and department != "ทั้งหมด":
             doctor_list = doctor_list.filter(department__name=department)
 
-        paginator = Paginator(doctor_list, 6)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        page_obj = paginator(request, doctor_list, 6)
         
         context = {
             "page_obj": page_obj,
@@ -146,158 +237,28 @@ class AppointmentView(LoginRequiredMixin,View):
     login_url = "/hopelife/login/"
     
     def get(self, request, doctor_id, current_date):
-        # ดึงข้อมูลหมอจากฐานข้อมูล
         doc = Doctor.objects.get(pk=doctor_id)
         week = range(1, 8)
-        # today = datetime.now()
-        today = datetime(2024, 10, 16, 9, 30)
+
+        today = datetime.now()
+        today_day = day(today, "full")
         
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
+        appointment_day = day(appointment_date, "short")
+        appoint_time = doc_appoint(doc.user, appointment_date)
 
+        doc.day = doc_shift(doc, today_day, "short")
 
-
-
-        # หาว่าวันนี้คือวันอะไร เอาไปเทียบกับ doc.day เพื่อดูว่าหมอคนที่อยู่ในเวรมั้ย
-        appointment_day = appointment_date.strftime("%a")
-        today_day = today.strftime("%A")
-        day_translation = {
-            "Monday": "จันทร์",
-            "Tuesday": "อังคาร",
-            "Wednesday": "พุธ",
-            "Thursday": "พฤหัส",
-            "Friday": "ศุกร์",
-            "Saturday": "เสาร์",
-            "Sunday": "อาทิตย์"
-        }
-        today_day = day_translation.get(today_day)
-        print(today_day)
-
-
-
-        # หาเป็นวันที่หมอคนนี้จะเริ่มทำงาน
-        day_translation = {
-            "Mon": "จ.",
-            "Tue": "อ.",
-            "Wed": "พ.",
-            "Thu": "พฤ.",
-            "Fri": "ศ.",
-            "Sat": "ส.",
-            "Sun": "อา."
-        }
-
-        appointment_day = day_translation.get(appointment_day)
-
-        #หาช่วงวันที่หมอทำงาน 
-        weekdays_full = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-        weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
-        start_day, end_day = doc.shift_day.split('-') #แยกวันที่เริ่มเวร, วันสุดท้ายของเวรใน 1 สัปดาห์
-        start_index = weekdays_full.index(start_day)
-        end_index = weekdays_full.index(end_day)
-        # สร้างลิสต์เก็บวันเป็นตัวย่อ
-        if start_index <= end_index:
-            doc.day = weekdays_short[start_index:end_index + 1]
-        else:
-            doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
-        print(f"doc.day= {doc.day}")
-
-
-
-
-        today_date = today.date()
-        days_ahead = 0
-        max_days_to_check = 7  # ภายใน 1 สัปดาห์
-        default_start_date = None  # ค่าเริ่มต้น
-
-        while days_ahead < max_days_to_check:
-            day_eng = today_date.strftime("%a")  
-            day_short = day_translation.get(day_eng)
-            
-            print(f"กำลังตรวจสอบวันที่: {today_date}, day_short: {day_short}")
-
-            if day_short in doc.day:
-                default_start_date = today_date.strftime("%d/%m/%Y")  # แปลงวันที่ให้เป็นรูปแบบ dd/mm/yyyy
-                break
-            today_date += timedelta(days=1)  # ถ้าหมอไม่ว่างในวันนี้ ให้เช็ควันถัดไป
-            days_ahead += 1  # เพิ่มตัวนับจำนวนวันที่ตรวจสอบ
-
-        if not default_start_date:
-            # กรณีที่ไม่เจอวันว่างเลยใน 7 วันถัดไป
-            default_start_date = today.strftime('%d/%m/%Y')  # ใช้วันที่ปัจจุบันแทน
-
-        # เช็คหน้าก่อนว่ามาจากหน้าไหน
-        referrer = request.META.get('HTTP_REFERER')
-        previous = ""
-        if referrer:
-            if "appointment" in referrer:
-                previous = "คิวพบแพทย์"
-            elif "doctor-list" in referrer:
-                previous = "รายชื่อแพทย์"
+        previous = beforeAppoint(request)
         
+        form = AppointmentForm(initial={'appointment_date': appointment_date_str})
 
+        updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
 
-        form = AppointmentForm(initial={'appointment_date': appointment_date.strftime('%d/%m/%Y')})
-
-
-
-
-        # กำหนดค่าเริ่มต้นและช่วงเวลา
-        interval = 10  # นาที
-        updated_times = []
-
-        # ใช้วันที่ปัจจุบันและเวลา 08:00
-        current_time = datetime.combine(appointment_date, datetime.strptime("08:00", "%H:%M").time())
-
-        # ใช้วันที่ปัจจุบันและเวลา 18:00
-        end_time = datetime.combine(appointment_date, datetime.strptime("18:00", "%H:%M").time())
-
-        # เวลาปัจจุบัน (รวมวันที่และเวลา)
-        # appointment_date = request.POST.get('appointment_date')
-        # if appointment_date is None:
-        #     appointment_date = default_start_date
-
-        # print(f"appointment_date:{appointment_date}, today_date: {today_date.strftime("%d/%m/%Y")}")
-
-        # ช่วงเวลาเข้าเวร
-        start_bound = datetime.combine(appointment_date, doc.start_time)
-        end_bound = datetime.combine(appointment_date, doc.end_time)
-
-
-        # if appointment_date == today_date.strftime("%d/%m/%Y"):
-        #     print(f"today")
-        # else:
-        #     print(f"not today")
-
-        print(f"appointment_date: {appointment_date}, default_start_date : {default_start_date}")
-        print(f"appointment_day: {appointment_day}")
-        # วนลูปเพื่อคำนวณช่วงเวลา
-        while current_time < end_time:
-            start_time_str = current_time.strftime("%H:%M")
-            next_time = current_time + timedelta(minutes=interval)
-            end_time_str = next_time.strftime("%H:%M")
-            
-            if appointment_day in doc.day:
-                if (appointment_date == datetime.strptime(default_start_date, '%d/%m/%Y')):
-                    # ตรวจสอบว่าเวลาปัจจุบันน้อยกว่าเวลาที่กำหนดไว้ (now)
-                    if current_time < today:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                    elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
-                        updated_times.append((start_time_str, end_time_str, "in_range"))
-                    else:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                else:
-                    updated_times.append((start_time_str, end_time_str, "in_range"))
-            else:
-                updated_times.append((start_time_str, end_time_str, "out_of_range"))
-
-            # อัปเดต current_time เพื่อทำงานต่อในรอบถัดไป
-            current_time = next_time
-
-        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
         doc_days_json = mark_safe(json.dumps(doc.day))
-        # print(f"updated_times: {updated_times}")
 
-        # ส่งข้อมูลไปยัง template
+
         context = {
             'doc': doc,  # ข้อมูลหมอ
             'week': week,  # ข้อมูลสัปดาห์
@@ -307,9 +268,7 @@ class AppointmentView(LoginRequiredMixin,View):
             'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
-            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template,
             'today_day' : today_day,
-            'today_date': today_date.strftime("%d/%m/%Y"),
             'appointment_date_str': appointment_date_str,
             'current_date': current_date
         }
@@ -317,159 +276,29 @@ class AppointmentView(LoginRequiredMixin,View):
         return render(request, 'appointment.html', context)
     
 
-
     def post(self, request, doctor_id, current_date):
         form = AppointmentForm(request.POST, request.FILES)
 
-        # ดึงข้อมูลหมอจากฐานข้อมูล
         doc = Doctor.objects.get(pk=doctor_id)
         week = range(1, 8)
+
         today = datetime.now()
-        # today = datetime(2024, 10, 16, 9, 30)
-        appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
-
-
-
-
-        # หาว่าวันนี้คือวันอะไร เอาไปเทียบกับ doc.day เพื่อดูว่าหมอคนที่อยู่ในเวรมั้ย
-        appointment_day = appointment_date.strftime("%a")
-        today_day = today.strftime("%A")
-        day_translation = {
-            "Monday": "จันทร์",
-            "Tuesday": "อังคาร",
-            "Wednesday": "พุธ",
-            "Thursday": "พฤหัส",
-            "Friday": "ศุกร์",
-            "Saturday": "เสาร์",
-            "Sunday": "อาทิตย์"
-        }
-        today_day = day_translation.get(today_day)
-        print(today_day)
-
-
-
-        # หาเป็นวันที่หมอคนนี้จะเริ่มทำงาน
-        day_translation = {
-            "Mon": "จ.",
-            "Tue": "อ.",
-            "Wed": "พ.",
-            "Thu": "พฤ.",
-            "Fri": "ศ.",
-            "Sat": "ส.",
-            "Sun": "อา."
-        }
-
-        appointment_day = day_translation.get(appointment_day)
-
-        #หาช่วงวันที่หมอทำงาน 
-        weekdays_full = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-        weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
-        start_day, end_day = doc.shift_day.split('-') #แยกวันที่เริ่มเวร, วันสุดท้ายของเวรใน 1 สัปดาห์
-        start_index = weekdays_full.index(start_day)
-        end_index = weekdays_full.index(end_day)
-        # สร้างลิสต์เก็บวันเป็นตัวย่อ
-        if start_index <= end_index:
-            doc.day = weekdays_short[start_index:end_index + 1]
-        else:
-            doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
-        print(f"doc.day= {doc.day}")
-
-
-
-
-        today_date = today.date()
-        days_ahead = 0
-        max_days_to_check = 7  # ภายใน 1 สัปดาห์
-        default_start_date = None  # ค่าเริ่มต้น
-
-        while days_ahead < max_days_to_check:
-            day_eng = today_date.strftime("%a")  
-            day_short = day_translation.get(day_eng)
-            
-            print(f"กำลังตรวจสอบวันที่: {today_date}, day_short: {day_short}")
-
-            if day_short in doc.day:
-                default_start_date = today_date.strftime("%d/%m/%Y")  # แปลงวันที่ให้เป็นรูปแบบ dd/mm/yyyy
-                break
-            today_date += timedelta(days=1)  # ถ้าหมอไม่ว่างในวันนี้ ให้เช็ควันถัดไป
-            days_ahead += 1  # เพิ่มตัวนับจำนวนวันที่ตรวจสอบ
-
-        if not default_start_date:
-            # กรณีที่ไม่เจอวันว่างเลยใน 7 วันถัดไป
-            default_start_date = today.strftime('%d/%m/%Y')  # ใช้วันที่ปัจจุบันแทน
-
-        # เช็คหน้าก่อนว่ามาจากหน้าไหน
-        referrer = request.META.get('HTTP_REFERER')
-        previous = ""
-        if referrer:
-            if "appointment" in referrer:
-                previous = "คิวพบแพทย์"
-            elif "doctor-list" in referrer:
-                previous = "รายชื่อแพทย์"
+        today_day = day(today, "full")
         
+        appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
+        appointment_date_str = appointment_date.strftime("%d/%m/%Y")
+        appointment_day = day(appointment_date, "short")
+        appoint_time = doc_appoint(doc.user, appointment_date)
 
+        doc.day = doc_shift(doc, today_day, "short")
 
+        previous = beforeAppoint(request)
 
+        updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
 
-
-
-        # กำหนดค่าเริ่มต้นและช่วงเวลา
-        interval = 10  # นาที
-        updated_times = []
-
-        # ใช้วันที่ปัจจุบันและเวลา 08:00
-        current_time = datetime.combine(appointment_date, datetime.strptime("08:00", "%H:%M").time())
-
-        # ใช้วันที่ปัจจุบันและเวลา 18:00
-        end_time = datetime.combine(appointment_date, datetime.strptime("18:00", "%H:%M").time())
-
-        # เวลาปัจจุบัน (รวมวันที่และเวลา)
-        # appointment_date = request.POST.get('appointment_date')
-        # if appointment_date is None:
-        #     appointment_date = default_start_date
-
-        # print(f"appointment_date:{appointment_date}, today_date: {today_date.strftime("%d/%m/%Y")}")
-
-        # ช่วงเวลาเข้าเวร
-        start_bound = datetime.combine(appointment_date, doc.start_time)
-        end_bound = datetime.combine(appointment_date, doc.end_time)
-
-
-        # if appointment_date == today_date.strftime("%d/%m/%Y"):
-        #     print(f"today")
-        # else:
-        #     print(f"not today")
-
-        print(f"appointment_date: {appointment_date}, default_start_date : {default_start_date}")
-        print(f"appointment_day: {appointment_day}")
-        # วนลูปเพื่อคำนวณช่วงเวลา
-        while current_time < end_time:
-            start_time_str = current_time.strftime("%H:%M")
-            next_time = current_time + timedelta(minutes=interval)
-            end_time_str = next_time.strftime("%H:%M")
-            
-            if appointment_day in doc.day:
-                if (appointment_date == datetime.strptime(default_start_date, '%d/%m/%Y')):
-                    # ตรวจสอบว่าเวลาปัจจุบันน้อยกว่าเวลาที่กำหนดไว้ (now)
-                    if current_time < today:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                    elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
-                        updated_times.append((start_time_str, end_time_str, "in_range"))
-                    else:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                else:
-                    updated_times.append((start_time_str, end_time_str, "in_range"))
-            else:
-                updated_times.append((start_time_str, end_time_str, "out_of_range"))
-
-            # อัปเดต current_time เพื่อทำงานต่อในรอบถัดไป
-            current_time = next_time
-
-        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
         doc_days_json = mark_safe(json.dumps(doc.day))
-        print(f"updated_times: {updated_times}")
 
-        # ส่งข้อมูลไปยัง template
+
         context = {
             'doc': doc,  # ข้อมูลหมอ
             'week': week,  # ข้อมูลสัปดาห์
@@ -479,9 +308,9 @@ class AppointmentView(LoginRequiredMixin,View):
             'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
-            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template,
             'today_day' : today_day,
-            'today_date': today_date.strftime("%d/%m/%Y"),
+            'appointment_date_str': appointment_date_str,
+            'current_date': current_date
         }
         
         
@@ -499,180 +328,32 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
     login_url = "/hopelife/login/"
 
     def get(self, request, current_date):
-        print(f"ค่าวันที่ส่งมาคือ: {current_date}")
-        print("--------------------------------------------------------")
-        # form = AppointmentForm(instance=project)
-        # if form.is_valid():                                                                      
-        #     form.save()                                                                          
-        #     return redirect('appoint:doc_appointment')
-        # ดึงข้อมูลหมอจากฐานข้อมูล
         doc = Doctor.objects.get(user=request.user)
         week = range(1, 8)
+
         today = datetime.now()
-        # today = datetime(2024, 10, 16, 9, 30)
+        today_day = day(today, "full")
+
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
+        appointment_day = day(appointment_date, "short")
+        appoint_time = doc_appoint(request.user, appointment_date)
 
-        # Query ที่กรองตาม doctor และวันที่นัดหมาย
-        appointments = Appointment.objects.filter(doctor=request.user, appointment_date=appointment_date)
+        doc.day = doc_shift(doc, today_day, "short")
 
-        # ดึงฟิลด์ appointment_time และแปลงเวลาให้อยู่ในรูป %H:%M
-        appoint_time = [
-            appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
-        ]
+        updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
 
-        # หาว่าวันนี้คือวันอะไร เอาไปเทียบกับ doc.day เพื่อดูว่าหมอคนที่อยู่ในเวรมั้ย
-        appointment_day = appointment_date.strftime("%a")
-        today_day = today.strftime("%A")
-        day_translation = {
-            "Monday": "จันทร์",
-            "Tuesday": "อังคาร",
-            "Wednesday": "พุธ",
-            "Thursday": "พฤหัส",
-            "Friday": "ศุกร์",
-            "Saturday": "เสาร์",
-            "Sunday": "อาทิตย์"
-        }
-        today_day = day_translation.get(today_day)
-        print(today_day)
-
-
-
-        # หาเป็นวันที่หมอคนนี้จะเริ่มทำงาน
-        day_translation = {
-            "Mon": "จ.",
-            "Tue": "อ.",
-            "Wed": "พ.",
-            "Thu": "พฤ.",
-            "Fri": "ศ.",
-            "Sat": "ส.",
-            "Sun": "อา."
-        }
-
-        appointment_day = day_translation.get(appointment_day)
-
-        #หาช่วงวันที่หมอทำงาน 
-        weekdays_full = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-        weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
-        start_day, end_day = doc.shift_day.split('-') #แยกวันที่เริ่มเวร, วันสุดท้ายของเวรใน 1 สัปดาห์
-        start_index = weekdays_full.index(start_day)
-        end_index = weekdays_full.index(end_day)
-        # สร้างลิสต์เก็บวันเป็นตัวย่อ
-        if start_index <= end_index:
-            doc.day = weekdays_short[start_index:end_index + 1]
-        else:
-            doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
-        print(f"doc.day= {doc.day}")
-
-
-
-
-        today_date = today.date()
-        days_ahead = 0
-        max_days_to_check = 7  # ภายใน 1 สัปดาห์
-        default_start_date = None  # ค่าเริ่มต้น
-
-        while days_ahead < max_days_to_check:
-            day_eng = today_date.strftime("%a")  
-            day_short = day_translation.get(day_eng)
-            
-            print(f"กำลังตรวจสอบวันที่: {today_date}, day_short: {day_short}")
-
-            if day_short in doc.day:
-                default_start_date = today_date.strftime("%d/%m/%Y")  # แปลงวันที่ให้เป็นรูปแบบ dd/mm/yyyy
-                break
-            today_date += timedelta(days=1)  # ถ้าหมอไม่ว่างในวันนี้ ให้เช็ควันถัดไป
-            days_ahead += 1  # เพิ่มตัวนับจำนวนวันที่ตรวจสอบ
-
-        if not default_start_date:
-            # กรณีที่ไม่เจอวันว่างเลยใน 7 วันถัดไป
-            default_start_date = today.strftime('%d/%m/%Y')  # ใช้วันที่ปัจจุบันแทน
-
-        # เช็คหน้าก่อนว่ามาจากหน้าไหน
-        referrer = request.META.get('HTTP_REFERER')
-        previous = ""
-        if referrer:
-            if "appointment" in referrer:
-                previous = "คิวพบแพทย์"
-            elif "doctor-list" in referrer:
-                previous = "รายชื่อแพทย์"
-        
-
-
-
-
-
-        # กำหนดค่าเริ่มต้นและช่วงเวลา
-        interval = 10  # นาที
-        updated_times = []
-
-        # ใช้วันที่ปัจจุบันและเวลา 08:00
-        current_time = datetime.combine(appointment_date, datetime.strptime("08:00", "%H:%M").time())
-
-        # ใช้วันที่ปัจจุบันและเวลา 18:00
-        end_time = datetime.combine(appointment_date, datetime.strptime("18:00", "%H:%M").time())
-
-        # เวลาปัจจุบัน (รวมวันที่และเวลา)
-        # appointment_date = request.POST.get('appointment_date')
-        # if appointment_date is None:
-        #     appointment_date = default_start_date
-
-        # print(f"appointment_date:{appointment_date}, today_date: {today_date.strftime("%d/%m/%Y")}")
-
-        # ช่วงเวลาเข้าเวร
-        start_bound = datetime.combine(appointment_date, doc.start_time)
-        end_bound = datetime.combine(appointment_date, doc.end_time)
-
-
-        # if appointment_date == today_date.strftime("%d/%m/%Y"):
-        #     print(f"today")
-        # else:
-        #     print(f"not today")
-
-        print(f"appointment_date: {appointment_date}, default_start_date : {default_start_date}")
-        print(f"appointment_day: {appointment_day}")
-        # วนลูปเพื่อคำนวณช่วงเวลา
-        while current_time < end_time:
-            start_time_str = current_time.strftime("%H:%M")
-            next_time = current_time + timedelta(minutes=interval)
-            end_time_str = next_time.strftime("%H:%M")
-            
-            if appointment_day in doc.day:
-                if start_time_str in appoint_time :
-                    updated_times.append((start_time_str, end_time_str, "appointment"))
-                elif (appointment_date == datetime.strptime(default_start_date, '%d/%m/%Y')):
-                    # ตรวจสอบว่าเวลาปัจจุบันน้อยกว่าเวลาที่กำหนดไว้ (now)
-                    if current_time < today:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                    elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
-                        updated_times.append((start_time_str, end_time_str, "in_range"))
-                    else:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                else:
-                    updated_times.append((start_time_str, end_time_str, "in_range"))
-            else:
-                updated_times.append((start_time_str, end_time_str, "out_of_range"))
-
-            # อัปเดต current_time เพื่อทำงานต่อในรอบถัดไป
-            current_time = next_time
-
-        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
         doc_days_json = mark_safe(json.dumps(doc.day))
-        # print(f"updated_times: {updated_times}")
 
-        # ส่งข้อมูลไปยัง template
         context = {
             'doc': doc,  # ข้อมูลหมอ
             'week': week,  # ข้อมูลสัปดาห์
             'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
             'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            # 'form': form,  # ฟอร์มนัดหมาย
-            'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
-            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template,
             'today_day' : today_day,
-            'today_date': today_date.strftime("%d/%m/%Y"),
+            'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
         }
 
@@ -680,171 +361,33 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
 
     def post(self, request, current_date):
         appointment_time = request.POST.get('appointment_time')
-        # ทำงานกับเวลานัดหมายที่ได้รับมา
         print(f"เวลานัดหมายที่เลือกคือ: {appointment_time}")
-        # ส่งค่าหรือบันทึกข้อมูลในฐานข้อมูลได้ตามต้องการ
+
         return redirect('appoint:doc_appointment_edit', current_date=current_date, appointment_time=appointment_time)
 
 class DoctorAppointmentEditView(LoginRequiredMixin,View):
     def get(self, request, current_date, appointment_time):
         app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
-        print("hi")
-        print(f"ผู้ป่วย: {app.patient}")
         app_patient = Patient.objects.get(user=app.patient)
+
         form = AppointmentForm(instance=app)
+
         doc = Doctor.objects.get(user=request.user)
         week = range(1, 8)
+
         today = datetime.now()
-        # today = datetime(2024, 10, 16, 9, 30)
+        today_day = day(today, "full")
+
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
+        appointment_day = day(appointment_date, "short")
+        appoint_time = doc_appoint(request.user, appointment_date)
 
-        # Query ที่กรองตาม doctor และวันที่นัดหมาย
-        appointments = Appointment.objects.filter(doctor=request.user, appointment_date=appointment_date)
+        doc.day = doc_shift(doc, today_day, "short")
 
-        # ดึงฟิลด์ appointment_time และแปลงเวลาให้อยู่ในรูป %H:%M
-        appoint_time = [
-            appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
-        ]
+        updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
 
-        # หาว่าวันนี้คือวันอะไร เอาไปเทียบกับ doc.day เพื่อดูว่าหมอคนที่อยู่ในเวรมั้ย
-        appointment_day = appointment_date.strftime("%a")
-        today_day = today.strftime("%A")
-        day_translation = {
-            "Monday": "จันทร์",
-            "Tuesday": "อังคาร",
-            "Wednesday": "พุธ",
-            "Thursday": "พฤหัส",
-            "Friday": "ศุกร์",
-            "Saturday": "เสาร์",
-            "Sunday": "อาทิตย์"
-        }
-        today_day = day_translation.get(today_day)
-        print(today_day)
-
-
-
-        # หาเป็นวันที่หมอคนนี้จะเริ่มทำงาน
-        day_translation = {
-            "Mon": "จ.",
-            "Tue": "อ.",
-            "Wed": "พ.",
-            "Thu": "พฤ.",
-            "Fri": "ศ.",
-            "Sat": "ส.",
-            "Sun": "อา."
-        }
-
-        appointment_day = day_translation.get(appointment_day)
-
-        #หาช่วงวันที่หมอทำงาน 
-        weekdays_full = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"]
-        weekdays_short = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."]
-        start_day, end_day = doc.shift_day.split('-') #แยกวันที่เริ่มเวร, วันสุดท้ายของเวรใน 1 สัปดาห์
-        start_index = weekdays_full.index(start_day)
-        end_index = weekdays_full.index(end_day)
-        # สร้างลิสต์เก็บวันเป็นตัวย่อ
-        if start_index <= end_index:
-            doc.day = weekdays_short[start_index:end_index + 1]
-        else:
-            doc.day = weekdays_short[start_index:] + weekdays_short[:end_index + 1]
-        print(f"doc.day= {doc.day}")
-
-
-
-
-        today_date = today.date()
-        days_ahead = 0
-        max_days_to_check = 7  # ภายใน 1 สัปดาห์
-        default_start_date = None  # ค่าเริ่มต้น
-
-        while days_ahead < max_days_to_check:
-            day_eng = today_date.strftime("%a")  
-            day_short = day_translation.get(day_eng)
-            
-            print(f"กำลังตรวจสอบวันที่: {today_date}, day_short: {day_short}")
-
-            if day_short in doc.day:
-                default_start_date = today_date.strftime("%d/%m/%Y")  # แปลงวันที่ให้เป็นรูปแบบ dd/mm/yyyy
-                break
-            today_date += timedelta(days=1)  # ถ้าหมอไม่ว่างในวันนี้ ให้เช็ควันถัดไป
-            days_ahead += 1  # เพิ่มตัวนับจำนวนวันที่ตรวจสอบ
-
-        if not default_start_date:
-            # กรณีที่ไม่เจอวันว่างเลยใน 7 วันถัดไป
-            default_start_date = today.strftime('%d/%m/%Y')  # ใช้วันที่ปัจจุบันแทน
-
-        # เช็คหน้าก่อนว่ามาจากหน้าไหน
-        referrer = request.META.get('HTTP_REFERER')
-        previous = ""
-        if referrer:
-            if "appointment" in referrer:
-                previous = "คิวพบแพทย์"
-            elif "doctor-list" in referrer:
-                previous = "รายชื่อแพทย์"
-        
-
-
-
-
-
-        # กำหนดค่าเริ่มต้นและช่วงเวลา
-        interval = 10  # นาที
-        updated_times = []
-
-        # ใช้วันที่ปัจจุบันและเวลา 08:00
-        current_time = datetime.combine(appointment_date, datetime.strptime("08:00", "%H:%M").time())
-
-        # ใช้วันที่ปัจจุบันและเวลา 18:00
-        end_time = datetime.combine(appointment_date, datetime.strptime("18:00", "%H:%M").time())
-
-        # เวลาปัจจุบัน (รวมวันที่และเวลา)
-        # appointment_date = request.POST.get('appointment_date')
-        # if appointment_date is None:
-        #     appointment_date = default_start_date
-
-        # print(f"appointment_date:{appointment_date}, today_date: {today_date.strftime("%d/%m/%Y")}")
-
-        # ช่วงเวลาเข้าเวร
-        start_bound = datetime.combine(appointment_date, doc.start_time)
-        end_bound = datetime.combine(appointment_date, doc.end_time)
-
-
-        # if appointment_date == today_date.strftime("%d/%m/%Y"):
-        #     print(f"today")
-        # else:
-        #     print(f"not today")
-
-        print(f"appointment_date: {appointment_date}, default_start_date : {default_start_date}")
-        print(f"appointment_day: {appointment_day}")
-        # วนลูปเพื่อคำนวณช่วงเวลา
-        while current_time < end_time:
-            start_time_str = current_time.strftime("%H:%M")
-            next_time = current_time + timedelta(minutes=interval)
-            end_time_str = next_time.strftime("%H:%M")
-            
-            if appointment_day in doc.day:
-                if start_time_str in appoint_time :
-                    updated_times.append((start_time_str, end_time_str, "appointment"))
-                elif (appointment_date == datetime.strptime(default_start_date, '%d/%m/%Y')):
-                    # ตรวจสอบว่าเวลาปัจจุบันน้อยกว่าเวลาที่กำหนดไว้ (now)
-                    if current_time < today:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                    elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
-                        updated_times.append((start_time_str, end_time_str, "in_range"))
-                    else:
-                        updated_times.append((start_time_str, end_time_str, "out_of_range"))
-                else:
-                    updated_times.append((start_time_str, end_time_str, "in_range"))
-            else:
-                updated_times.append((start_time_str, end_time_str, "out_of_range"))
-
-            # อัปเดต current_time เพื่อทำงานต่อในรอบถัดไป
-            current_time = next_time
-
-        # แปลง doc.day เป็น JSON เพื่อใช้ใน JavaScript
         doc_days_json = mark_safe(json.dumps(doc.day))
-        # print(f"updated_times: {updated_times}")
 
         # ส่งข้อมูลไปยัง template
         context = {
@@ -852,13 +395,10 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
             'week': week,  # ข้อมูลสัปดาห์
             'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
             'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            # 'form': form,  # ฟอร์มนัดหมาย
-            'previous': previous,  # หน้าที่มาก่อน
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
-            'default_start_date': default_start_date,  # ส่งวันที่ที่หมอว่างวันแรกไปยัง template,
             'today_day' : today_day,
-            'today_date': today_date.strftime("%d/%m/%Y"),
+            'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
             'app': app,
             'app_patient':app_patient,
