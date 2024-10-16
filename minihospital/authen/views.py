@@ -20,38 +20,22 @@ class LoginView(View):
 
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
+        current = datetime.now()
+        current_date = current.strftime('%Y-%m-%d')
         if form.is_valid():
             user = form.get_user() 
             login(request,user)
-            return redirect('main:home')
+            if  hasattr(user, 'doctor'):
+                return redirect('appoint:doc_appointment', current_date=current_date)
+            else:
+                return redirect('main:home')
 
         return render(request,'login.html', {"form":form})
-    
-class TestView(View):
-    def get(self, request):
-        return render(request,'login-out-test.html')
-
-    # def post(self, request):
-    #     username = request.POST.get('username')
-    #     password = request.POST.get('password')
-
-    #     # Authenticate the user
-    #     user = authenticate(request, username=username, password=password)
-
-    #     if user is not None:
-    #         # If user is valid, log them in and redirect to home
-    #         login(request, user)
-    #         return redirect('home')  # Change to your home URL name
-    #     else:
-    #         # Show error message
-    #         messages.error(request, "Invalid username or password.")
-    #         return render(request, 'login.html', {"form": PatientRegistrationForm()})
 
 class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('authen:login')
-        # pass
 
 class RegisterView(View):
     def get(self, request):

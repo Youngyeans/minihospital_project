@@ -109,7 +109,7 @@ from django.contrib import messages
 from datetime import datetime
 
 class LoginView(View):
-    def get(self, request):
+    def get(self, request): 
         return render(request, 'login.html', {"form": None})
 
     def post(self, request):

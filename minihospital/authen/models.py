@@ -72,15 +72,12 @@ class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
     
 
 class Doctor(models.Model):
     prefix = models.CharField(max_length=10, default='นพ.')
-    #first_name = models.CharField(max_length=255)
-    #last_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
-    #email = models.EmailField()
     address = models.TextField()
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     doctor_image = models.ImageField(upload_to="images/doctor/", blank=True, null=True)
@@ -88,11 +85,10 @@ class Doctor(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField()
-    #personalID = models.CharField(max_length=13, unique=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
 # password : Xy7#p9Tk!
     
 class Staff(models.Model):

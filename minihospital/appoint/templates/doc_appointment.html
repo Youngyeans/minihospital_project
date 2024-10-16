@@ -13,27 +13,11 @@
 {% block content %}
 <div class="container-full flex flex-col justify-center items-center">
 
-    <div class="container m-5 flex space-x-6 justify-start items-center">
+    <!-- <div class="container m-5 flex space-x-6 justify-start items-center">
         <div class="text-[#909090] text-[20px] font-normal">{{ previous }}</div>
         <img class="" width="14" height="14" src="{% static 'image/play-button.png' %}" />
         <div class="text-center text-[#909090] text-[20px] font-normal">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
-    </div>
-
-
-    <form method="post">
-        {% csrf_token %}
-        <!-- <div class="text-red-500 mb-4">
-            {{ form.nonfield_errors }}
-        </div> -->
-
-        <!-- <div class="text-red-500 mb-4">
-            {{ form.start_sympDate.errors }}
-        </div>
-         -->
-        
-        <div class="text-red-500 mb-4">
-            {{ form.errors }}
-        </div>
+    </div> -->
 
         <div class="container m-5 flex space-x-6 justify-center items-center p-5">
 
@@ -70,18 +54,25 @@
                     <div class="text-center text-[#3d5279] text-[32px] font-semibold">นัดหมายแพทย์</div>
                     <div class="flex space-x-5 items-center">
                         <div class="w-[350px] flex items-center relative">
-                            {{ form.appointment_date }}
+                            <input 
+                                    type="text" 
+                                    id="startDate" 
+                                    class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" 
+                                    placeholder="dd/mm/yyyy" 
+                                    oninput="updateDates()"
+                                    value={{appointment_date_str}}
+                                />
                             <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
                         </div>
-                        <button onclick="sendLink()" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-[16px] font-medium px-4  py-2">เลือกวันนัด</button>
+                        <button onclick="sendLink()" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-[16px] font-medium px-4  py-2">เลือกวัน</button>
                     </div>
 
                 </div>
-                <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันนัดหมายที่ต้องการ</div>
+                <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันที่ต้องการ</div>
                 
                 <div class="flex justify-between items-center">
                     
-                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}">
+                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="hidden">
                     
                     <div id="dateGrid" class="grid grid-cols-7 grid-cols-1 gap-[26px] m-16">
                         {% for i in week %}
@@ -92,7 +83,7 @@
                         {% endfor %}
                     </div>
                     
-                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="rotate-180">
+                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="hidden rotate-180">
                     
                 </div>
                 
@@ -126,7 +117,7 @@
                     
                     // สร้าง URL ใหม่ (คุณสามารถกำหนดรูปแบบ URL ได้ตามที่ต้องการ)
                     const doctorId = "{{ doc.id }}";  // รับค่า doctor.id จาก Django หรือจะใช้ค่าอื่นที่คุณต้องการ
-                    const newUrl = `/hopelife/doctor/${doctorId}/appointment/${formattedDate}/`;  // เปลี่ยน URL ตามที่คุณต้องการ
+                    const newUrl = `/hopelife/doctor_appointment/${formattedDate}/`;  // เปลี่ยน URL ตามที่คุณต้องการ
             
                     // ตรวจสอบว่า URL ถูกต้องหรือไม่
                     console.log("New URL:", newUrl);
@@ -140,10 +131,9 @@
         
         <div class="container my-5 mx-20 flex justify-center items-center p-5 flex-col">
             <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold" id="formattedDate"></div>
-            <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณาเลือกเวลานัดหมาย</div>
+            <div class="text-[#909090] text-lg font-normal text-start w-full ">หากต้องการแก้ไขการนัดหมาย กรุณากดที่เวลาที่ต้องการแก้</div>
 
             <!-- เลือกเวลานัด  -->
-            {{ form.appointment_time }}
             <div class="grid grid-cols-6 gap-2 my-16">
                 {% for start_time, end_time, status in updated_times %}
                     {% if start_time|slice:":2" == "12" %}
@@ -154,13 +144,13 @@
                         {% endif %}
                     {% else %}
                             {% if status == "appointment" %}
-                                <div class="bg-[#15cdcb] rounded-[20px] flex space-x-3 py-3 px-5">
+                                <div class="time-slot bg-[#15cdcb] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
                                     <div class="text-white text-lg font-normal">{{ start_time }}</div>
                                     <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
                                     <div class="text-white text-lg font-normal">{{ end_time }}</div>
                                 </div>
                             {% elif status == "in_range" %}
-                                <div class="time-slot bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
+                                <div class="bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5">
                                     <div class="text-[#3d5279] text-lg font-normal">{{ start_time }}</div>
                                     <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
                                     <div class="text-[#3d5279] text-lg font-normal">{{ end_time }}</div>
@@ -174,122 +164,98 @@
                             {% endif %}
 
 
+
                     {% endif %}
                 {% endfor %}
             </div>
+
+            <form id="appointmentForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="appointment_time" id="appointment_time" value="">
+                <button type="submit" id="submitAppointment" class="hidden"></button>
+            </form>
             
             
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                // เช็คว่าฟิลด์ appointment_time มีค่าอยู่หรือไม่
-                const appointmentTime = document.querySelector('input[name="appointment_time"]').value;
-
-                if (appointmentTime) {
-                    // ถ้ามีค่า ให้หา slot ที่ data-start ตรงกับค่าใน appointment_time
-                    document.querySelectorAll('.time-slot').forEach(slot => {
-                        if (slot.getAttribute('data-start') === appointmentTime) {
-                            slot.classList.add('bg-blue-200');  // เปลี่ยนสีเป็นสีฟ้า
-                        }
-                    });
-                }
-
-                // สำหรับ event click ของช่องเวลา
                 document.querySelectorAll('.time-slot').forEach(slot => {
                     slot.addEventListener('click', function() {
                         // ลบคลาสที่ active ออกจากช่องเวลาอื่น ๆ
                         document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('bg-blue-200'));
-
+                        
                         // เพิ่มคลาส active ให้กับช่องเวลาที่ถูกคลิก
                         this.classList.add('bg-blue-200');
-
+                        
                         // เก็บค่าเวลาที่เลือก
-                        const selectedTime = this.getAttribute('data-start');
-
+                        const appointmentTime = this.getAttribute('data-start');
+                        
                         // กำหนดค่าให้กับ input hidden ที่จะส่งไปกับ form
-                        document.querySelector('input[name="appointment_time"]').value = selectedTime;
-                        document.getElementById('validation_time').innerText = "เวลานัดหมาย : " + selectedTime;
-
+                        document.getElementById('appointment_time').value = appointmentTime;
+                        
                         // แสดงผลเวลาเพื่อทดสอบ (optional)
-                        console.log(`Selected appointment time: ${selectedTime}`);
+                        console.log(`Selected appointment time: ${appointmentTime}`);
+                        
+                        // ส่งฟอร์มไปยัง server
+                        document.getElementById('submitAppointment').click();
                     });
                 });
-            });
-
             </script>
-
-            <!-- กรอกอาการ -->
-            <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold">อาการ</div>
-            <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณากรอกรายละเอียดเพื่อการรักษาที่ถูกต้อง</div>
-
-            <div class="w-full flex justify-start">
-                <div class="flex justify-center items-center grid grid-cols-[auto,1fr] gap-y-5">
-        
-                    <div class="text-[#494949] text-lg font-normal">อาการ :</div>
-                    {{ form.symptom }}
-                    
-                    <div class="text-[#494949] text-lg font-normal">มีอาการตั้งแต่  : </div>
-                    <div class="w-[350px] flex items-center relative">   
-                        {{ form.start_sympDate }}
-                        <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('sympDate')"  class="cursor-pointer absolute right-6" width="27" height="27">
-                    </div>
-        
-                    <div class="text-[#494949] text-lg font-normal">อุณภูมิร่างกาย : </div>
-                    <div class="relative flex items-center w-[350px]">
-                        {{ form.temperature }}
-                        <div class="absolute text-[#c7c7c7] text-base font-normal right-[35px]">องศาเซลเซียส</div>
-                    </div>
-        
-                </div>
-            </div>
-
-            <button id="validate" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
             
             <!-- Pop-up Container -->
-            <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
-                    <div class="text-start text-[#3d5279] text-[32px] font-semibold">ยืนยันการนัดหมาย</div>
-                    <div class="text-start text-[#909090] text-base font-normal">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</div>
-                    <div class="flex space-x-16 mt-10">
-                        <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
-                            <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
-                        </div>
-
-                        <div>
-                            <div class="text-[#494949] text-base font-normal">ผู้ป่วย : {{ user.patient.prefix }} {{ user.first_name }} {{ user.last_name }}</div>
-                            <div class="text-[#494949] text-base font-normal">แพทย์ : {{ doc.prefix }} {{ doc.user.first_name }} {{ doc.user.last_name }}</div>
-                            <div class="text-[#494949] text-base font-normal">แผนก :
-                                <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
-                                    {{ doc.department }}
-                                </div>
-                            </div>
-                            <div id="validateDate" class="text-[#494949] text-base font-normal">วันที่นัดหมาย : {{appointment_date_str}}</div>
-                            <div id="validation_time" class="text-[#494949] text-base font-normal"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-center mt-10">
-                        <button type="submit" class="py-2 px-12 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] inline-block text-center text-white text-xl font-medium">
-                            ยืนยันการนัดหมาย
-                        </button>
-                    </div>
-
-                    <!-- ปุ่มปิด pop-up -->
-                    <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
+            {% comment %} <form method="post">
+                {% csrf_token %}
+                <div class="text-red-500 mb-4">
+                    {{ form.nonfield_errors }}
                 </div>
-            </div>
+                
+                <div class="text-red-500 mb-4">
+                    {{ form.errors }}
+                </div>
+                <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
+                        <div class="text-start text-[#3d5279] text-[32px] font-semibold">ยืนยันการนัดหมาย</div>
+                        <div class="text-start text-[#909090] text-base font-normal">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</div>
+                        <div class="flex space-x-16 mt-10">
+                            <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
+                                <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
+                            </div>
 
-            <script>
+                            <div>
+                                <div class="text-[#494949] text-base font-normal">ผู้ป่วย : {{ user.patient.prefix }} {{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="text-[#494949] text-base font-normal">แพทย์ : {{ doc.prefix }} {{ doc.user.first_name }} {{ doc.user.last_name }}</div>
+                                <div class="text-[#494949] text-base font-normal">แผนก :
+                                    <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
+                                        {{ doc.department }}
+                                    </div>
+                                </div>
+                                <div id="validateDate" class="text-[#494949] text-base font-normal">วันที่นัดหมาย : {{appointment_date_str}}</div>
+                                <div id="validation_time" class="text-[#494949] text-base font-normal"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center mt-10">
+                            <button type="submit" class="py-2 px-12 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] inline-block text-center text-white text-xl font-medium">
+                                ยืนยันการนัดหมาย
+                            </button>
+                        </div>
+
+                        <!-- ปุ่มปิด pop-up -->
+                        <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
+                    </div>
+                </div>
+            </form> {% endcomment %}
+
+            {% comment %} <script>
                 function togglePopup() {
                     const popup = document.getElementById('popup');
                     popup.classList.toggle('hidden'); // ซ่อนหรือแสดง popup
                 }
             
                 // ผูก event กับปุ่ม "จองคิวพบแพทย์"
-                document.getElementById('validate').addEventListener('click', function(event) {
+                document.getElementById('edit').addEventListener('click', function(event) {
                     event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
                     togglePopup(); // แสดงหรือซ่อน pop-up
                 });
-            </script>
+            </script> {% endcomment %}
         
         </div>
         

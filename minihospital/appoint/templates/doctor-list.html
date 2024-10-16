@@ -26,80 +26,101 @@
     <div class="container flex flex-col px-10 py-5">
         <p class="text-[#909090]">รายชื่อแพทย์ทั้งหมดที่ประจำการอยู่ในโรงพยาบาล โฮปไลฟ์</p>
         <div class="flex space-x-5 py-4">
-            <div class="hover:scale-110 hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#15CDCB] rounded-[50px] inline-flex items-center px-5 py-2 cursor-pointer ">
-                <div class="text-center text-white text-base font-normal">ทั้งหมด</div>
-            </div>
+            <a href="?department=ทั้งหมด" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center px-5 py-2 cursor-pointer
+           {% if selected_department == 'ทั้งหมด' %} bg-[#15CDCB] text-white {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <div class="text-center text-base font-normal">ทั้งหมด</div>
+            </a>
 
-            <div id="cat1" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img1" src="{% static 'image/bone.png' %}" width="22" height="22" class="">
+            <a href="?department=กระดูก" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'กระดูก' %} text-white bg-[#15CDCB] no-hover {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/bone.png' %}" width="22" height="22" class="{% if selected_department == 'กระดูก' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">กระดูก</div>
-            </div>
+            </a>
 
-            <div id="cat2" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img2" src="{% static 'image/baby-boy.png' %}" width="22" height="22" class="">
+            <a href="?department=เด็ก" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'เด็ก' %} text-white bg-[#15CDCB] {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/baby-boy.png' %}" width="22" height="22" class="{% if selected_department == 'เด็ก' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">เด็ก</div>
-            </div>
+            </a>
 
-            <div id="cat3" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img3" src="{% static 'image/visible.png' %}" width="22" height="22" class="">
+            <a href="?department={{ 'ตา หู คอ จมูก' | urlencode }}" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'ตา หู คอ จมูก' %} text-white bg-[#15CDCB] {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/visible.png' %}" width="22" height="22" class="{% if selected_department == 'ตา หู คอ จมูก' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">ตา หู คอ จมูก</div>
-            </div>
+            </a>
 
-            <div id="cat4" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img4" src="{% static 'image/hand.png' %}" width="22" height="22" class="">
+            <a href="?department=ผิวหนัง" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'ผิวหนัง' %} text-white bg-[#15CDCB] {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/hand.png' %}" width="22" height="22" class="{% if selected_department == 'ผิวหนัง' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">ผิวหนัง</div>
-            </div>
+            </a>
 
-            <div id="cat5" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img5" src="{% static 'image/stethoscope.png' %}" width="22" height="22" class="">
+            <a href="?department=โรคทั่วไป" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'โรคทั่วไป' %} text-white bg-[#15CDCB] {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/stethoscope.png' %}" width="22" height="22" class="{% if selected_department == 'โรคทั่วไป' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">โรคทั่วไป</div>
-            </div>
+            </a>
 
-            <div id="cat6" class="hover:scale-110 text-[#909090] hover:text-white duration-300 transition ease-in-out delay-150 hover:bg-[#15CDCB] bg-[#efefef] rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer">
-                <img id="img6" src="{% static 'image/female.png' %}" width="22" height="22" class="">
+            <a href="?department=ผู้หญิง" class="hover:bg-[#E1F6F5] hover:scale-110 duration-300 transition ease-in-out delay-150 rounded-[50px] inline-flex items-center space-x-3 px-4 py-2 cursor-pointer
+            {% if selected_department == 'ผู้หญิง' %} text-white bg-[#15CDCB] {% else %} text-[#909090] bg-[#efefef] {% endif %}">
+                <img src="{% static 'image/female.png' %}" width="22" height="22" class="{% if selected_department == 'ผู้หญิง' %} brightness-200 {% endif %}">
                 <div class="text-center text-base font-normal">ผู้หญิง</div>
-            </div>
+            </a>
         </div>
     </div>
 
     <div class="w-full flex flex-col justify-center items-center">
         
         <div class="mt-6 grid grid-cols-3 gap-10">
-            <!-- Doctor card (repeat this block for each doctor card) -->
-            {% for doc in doctor_list %}
-            <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 mt-24 shadow-box relative bg-white w-[425px] h-[234px] rounded-[20px] border border-[#eaeaea] flex flex-col justify-center items-center">
-                <div class="absolute -top-20 w-[153px] h-[153px] bg-[#e1f6f5] rounded-full">
-                    <img class="rounded-full" width="153" height="153" src="{{ doc.doctor_image.url }}" />
-                </div>
-                <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
-                <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
-                <a href="{% url 'appoint:appointment' doc.id %}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
-                    <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
-                    <div class="text-center text-base font-normal">รายละเอียด</div>
-                </a>
-            </div>
             
-
+            {% for doc in page_obj %}
+                <div class="hover:scale-110 duration-300 transition ease-in-out delay-150 mt-24 shadow-box relative bg-white w-[425px] h-[234px] rounded-[20px] border border-[#eaeaea] flex flex-col justify-center items-center">
+                    <div class="absolute -top-20 w-[153px] h-[153px] bg-[#e1f6f5] rounded-full">
+                        <img class="rounded-full" width="153" height="153" src="{{ doc.doctor_image.url }}" />
+                    </div>
+                    <div class="m-3 mt-5 text-center text-[#3d5279] text-xl font-medium">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
+                    <div class="bg-[#d2e0ff] mb-5 rounded-[30px] text-center text-[#6986c4] text-base font-normal py-1 px-5">{{doc.department}}</div>
+                    <a href="{% url 'appoint:appointment' doc.id current_date%}" id="btn{{ doc.id }}" class="text-[#15cdcb] hover:text-white cursor-pointer duration-300 transition ease-in-out delay-150 absolute bottom-0 py-4 space-x-5 flex justify-center items-center rounded-bl-[20px] rounded-br-[20px] border-gradient w-full">
+                        <img id="icon{{ doc.id }}" width="22" height="22" class="" src="{% static 'image/info.png'%}" />
+                        <div class="text-center text-base font-normal">รายละเอียด</div>
+                    </a>
+                </div>
             {% endfor %}
+
         </div>
 
-        <div class="flex p-5 space-x-6 justify-center items-center m-7">
-            <div class="flex space-x-4 mx-2">
-                <img class="" width="22" height="22" src="{% static 'image/back.png'%}" />
-                <div class="text-[#494949] text-base font-normal">หน้าก่อน</div>
-            </div>
-            <div class="w-[35px] h-[35px] bg-[#15cdcb] flex justify-center items-center rounded-full text-white text-base font-normal">
-                <div class="text-white text-base font-normal">1</div>
-            </div>
-            <div class="text-[#494949] text-base font-normal">2</div>
-            <div class="text-[#494949] text-base font-normal">3</div>
-            <div class="text-[#494949] text-base font-normal">4</div>
-            <div class="text-[#494949] text-base font-normal">5</div>
-            <div class="flex space-x-4 mx-2">
-                <div class="text-[#494949] text-base font-normal">หน้าถัดไป</div>
-                <img class="" width="22" height="22" src="{% static 'image/next.png'%}" />
+        <div class="pagination m-20">
+            <div class="step-links flex items-center space-x-5">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="flex items-center space-x-3 text-[#494949] hover:text-[#15cdcb] hover:underline hover:decoration-[#15cdcb] hover:underline-offset-4">
+                        <img class="" width="22" height="22" src="{% static 'image/back.png' %}" />
+                        <div class="text-base font-normal">หน้าก่อน</div>
+                    </a>
+                {% endif %}
+                
+                <div class="flex space-x-2 items-center">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <div class="w-[35px] h-[35px] bg-[#15cdcb] flex justify-center items-center rounded-full text-white text-base font-normal">
+                                 {{ num }}
+                            </div>
+                        {% else %}
+                            <a href="?page={{ num }}" class="duration-300 transition ease-in-out delay-150 w-[35px] h-[35px] hover:bg-[#15cdcb] hover:text-white flex justify-center items-center rounded-full text-[#494949] text-base font-normal mx-2">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="flex items-center space-x-3 text-[#494949] hover:text-[#15cdcb] hover:underline hover:decoration-[#15cdcb] hover:underline-offset-4">
+                        <div class="text-base font-normal">หน้าถัดไป</div>
+                        <img class="" width="22" height="22" src="{% static 'image/next.png' %}" />
+                    </a>
+                {% endif %}
             </div>
         </div>
+
 
     </div>
 </div>
