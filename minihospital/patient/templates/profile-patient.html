@@ -77,17 +77,24 @@
         
         <div class="boxbox bg-white w-fit pt-8 pb-12 px-16 mx-auto fade-i">
             <div class="flex flex-col items-center">
-                <img src="{% static 'image/suzy01.jpg'%}" alt="Profile Picture" class="w-52 h-52 rounded-full fade-i">
-                <h1 class="suzy text-2xl font-medium mt-5 fade-i">{{ patient.first_name }} {{ patient.last_name }}</h1>
-                <p class="name mb-8 fade-i">รหัสผู้ป่วย {{ patient.personalID }}</p>
-                <a href="{% url 'patient:profile-edit' %}">
-                    <button class="edit text-xl text-white py-3 px-14 rounded-full inline-flex items-center">
+                {% if patient.patient_image %}
+                    <img src="{{ patient.patient_image.url }}" alt="Profile Picture" class="w-64 h-64 rounded-full object-cover" id="profilePicture">
+                {% else %}
+                    <img src="{% static 'image/profile-user.png' %}" alt="Default Profile Picture" class="w-64 h-64 rounded-full object-cover" id="profilePicture">
+                {% endif %}
+                <h1 class="suzy text-2xl font-medium mt-5 fade-i">{{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="name mb-8 fade-i">รหัสผู้ป่วย {{ user.id }}</p>
+ 
+                <form method="POST" action="{% url 'patient:profile' user.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xl text-white py-3 px-14 rounded-full inline-flex items-center bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB] hover:scale-[0.98] transition-opacity transition-transform duration-500 ease-in-out">
                         <span>แก้ไข</span>
                         <svg class="w-4 h-4 ml-1 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </button>
-                </a>
+                </form>
+
             </div>
         </div>
     </div>

@@ -23,27 +23,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container w-full h-[1300px] mx-auto bg-gradient-to-b from-[#5280E2] to-[#15CDCB] flex">
-        <div class="bgwhite bg-white w-[1200px] h[1300px] ml-auto relative flex justify-center">
+    <div class="container w-full h-[1100px] mx-auto bg-gradient-to-b from-[#5280E2] to-[#15CDCB] flex">
+        <div class="bgwhite bg-white w-[1200px] h-full ml-auto flex flex-col justify-between">
 
-            <div class="flex flex-col mt-[100px] items-center absolute">
-                <div class="mb-8">
+            <div class="flex flex-col mt-[100px]">
+                <div class="mb-8 flex justify-center">
                     <h1 class="text-[#3E5279] text-5xl font-medium">ลงทะเบียนผู้ป่วยรายใหม่</h1>
                 </div>
 
-                <div class="flex items-center">
+                <div class="flex items-center justify-center">
                     <div class="">
                         <p class="bg-[#15CDCB] text-white rounded-full w-12 h-12 flex ml-3 items-center justify-center">1</p>
                         <p class="text-[#494949]">รายละเอียด</p>
                     </div>
-                    <div class="w-28 h-[2px] bg-[#C8C8C8] mx-3"></div> <!-- Horizontal line -->
+                    <div class="w-28 h-[2px] bg-[#C8C8C8] mx-3"></div> 
                     <div>
                         <p class="bg-[#15CDCB] text-white rounded-full w-12 h-12 flex ml-3 items-center justify-center">2</p>
                         <p class="text-[#494949]">ยืนยันข้อมูล</p>
                     </div>
-                </div>                      
-                    
-                <div class="flex flex-col mt-[300px] ml-0 absolute left-0 pl-8"> <!-- Pushed to the left -->
+                </div>
+
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+
+                <div class="flex mt-16 justify-between px-44">
                     <div class="text-[#494949] space-y-5">
                         <p>ชื่อ-นามสกุล : {{ first_name }} {{ last_name }}</p>
                         <p>รหัสบัตรประชาชน : {{ personalID }}</p>
@@ -58,25 +62,26 @@
                         <p>ที่อยู่ : {{ address }}</p>
                     </div>
                 </div>
+            </div>
 
-                <form method="post" action="{% url 'authen:validation' %}">  <!-- Added form tag -->
+            <div>
+                <form method="post" action="{% url 'authen:validation' %}"> 
                     {% csrf_token %}
-                    <div class="flex justify-end pr-20 pt-16 pb-8 space-x-5">
-                        <button type="submit" id="cancel" name="cancel" class="cancel py-5 px-14 rounded-full inline-flex items-center">
-                            <span>ยกเลิก</span>
+                    <div class="flex justify-between px-36 pt-8 pb-24 ">
+                        <button type="submit" id="cancel" name="cancel" class="text-[#494949] rounded-full border border-[#5280E2] transition-opacity transition-transform duration-500 ease-in-out hover:scale-95 py-5 px-14 inline-flex items-center">
+                            <span>ย้อนกลับ</span>
                         </button>
-
-                        <button type="submit" id="save" name="save" class="edit  py-5 px-12 rounded-full inline-flex items-center">
-                            <span>บันทึก</span>
+    
+                        <button type="submit" id="save" name="save" class="text-white bg-gradient-to-r from-[#5280E2] to-[#15CDCB] transition-opacity transition-transform duration-500 ease-in-out hover:scale-95 py-5 px-12 rounded-full inline-flex items-center hover:from-[#15CDCB] hover:to-[#15CDCB]">
+                            <span>ยืนยัน</span>
                             <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </button>
                     </div>
-                </form>  <!-- Close form tag -->
-
+                </form>
             </div>
+
         </div>
     </div>
-
 {% endblock %}

@@ -29,8 +29,13 @@
             </div>
     
             <div class="">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
                 <form method="post" action="{% url 'authen:login' %}">
                     {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    
                     {{ form.username.errors }}
                     <div class="mb-4 bg-[#EAEAEA] rounded-[50px] flex items-center pl-10 w-[618px] h-[65px] border-none outline-none">
                         {{ form.username }}

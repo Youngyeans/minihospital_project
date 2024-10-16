@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'treat',
     'prescribe',
     'bill',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

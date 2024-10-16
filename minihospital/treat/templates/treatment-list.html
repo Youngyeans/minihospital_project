@@ -150,18 +150,6 @@
             color: black; /* Hover color */
         }
 
-
-    /* .fade-in {
-        opacity: 0;
-        transform: translateY(-20px); /* ย้ายขึ้นจากตำแหน่งเริ่มต้น */
-        transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
-    }
-
-    .fade-in-active {
-        opacity: 1;
-        transform: translateY(0); กลับสู่ตำแหน่งปกติ
-    } */
-
     .bin:hover{
         transform: scale(0.95);
         transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
@@ -174,100 +162,30 @@
 <div class="container mx-auto w-full px-36 pt-12 pb-20 fade-in">
     <h1 class="personal font-medium mb-14">ประวัติการรักษา</h1>
 
-    <!-- กล่อง boxbox ที่ 1 -->
-    <div class="boxboxno bg-white p-12 fade-in flex items-center mb-10 relative">
-        
-        <div class="flex items-center justify-between w-full">
-            <div class="flex-shrink-0">
-                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
-            </div>
-            <div class="flex-grow mx-4">
-                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 4
-                    <span class="ml-4 notyet text-white px-6 py-1 rounded-full">
-                        ยังไม่ได้รับการรักษา
-                    </span>
-                </h2>
-                <p class="name2 mb-1">วันที่นัดหมาย : xx/xx/xxxx</p>
-                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
-                <p class="name3 font-medium">นพ. ปรัชญา มณีปัญญา</p>
-            </div>
-            <div>
-                <img src="{% static 'image/delete.png'%}" class="w-10 h-10 mr-5 bin cursor-pointer" alt="">
-            </div>
-            <div class="flex-shrink-0 space-y-2">
-                <button class="font-medium text-xl w-full cancel px-10 py-2 rounded-full focus:outline-none" id="editAppointmentBtn">
-                    แก้ไขนัดหมาย
-                </button>
-            </div>
-
-            <!-- Modal Structure -->
-            <div id="editAppointmentModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" id="closeModal">&times;</span>
-                    <h2>แก้ไขนัดหมาย</h2>
-                    <p>นี่คือที่ที่คุณสามารถแก้ไขนัดหมายของคุณ</p>
-                    <!-- You can add a form or additional content here -->
+    {% for appointment in appointments %}
+            <!-- กล่อง boxbox ที่ แสดงว่าได้รับการรักษาแล้ว -->
+            <div class="boxbox bg-white p-12 fade-in flex items-center mb-10 relative" onclick="window.location.href='{% url 'treat:treatment-result' pk=appointment.pk %}';">
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+                    </div>
+                    <div class="flex-grow mx-4">
+                        <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ {{ appointment.id }}
+                            <span class="ml-4 already text-white px-6 py-1 rounded-full">
+                                ได้รับการรักษาแล้ว
+                            </span>
+                        </h2>
+                        <p class="name2 mb-1">วันที่นัดหมาย : {{ appointment.appointment_date|date:"d/m/Y" }}</p>
+                        {% for treatment in treatments %}
+                            {% if treatment.appointment == appointment %}
+                                <p class="name2 mb-2">ผลวินิจฉัย: {{ treatment.diagnose }}</p>
+                            {% endif %}
+                        {% endfor %}
+                        <p class="name3 font-medium">{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p> 
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- กล่อง boxbox ที่ 2 -->
-    <div class="boxbox bg-white p-12 fade-in flex items-center mb-10 relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
-        <div class="flex items-center justify-between w-full">
-            <div class="flex-shrink-0">
-                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
-            </div>
-            <div class="flex-grow mx-4">
-                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 3
-                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
-                        ได้รับการรักษาแล้ว
-                    </span>
-                </h2>
-                <p class="name2 mb-1">วันที่นัดหมาย : 05/07/2024</p>
-                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
-                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- กล่อง boxbox ที่ 3 -->
-    <div class="boxbox bg-white p-12 fade-in flex items-center mb-10 relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
-        <div class="flex items-center justify-between w-full">
-            <div class="flex-shrink-0">
-                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
-            </div>
-            <div class="flex-grow mx-4">
-                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 2
-                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
-                        ได้รับการรักษาแล้ว
-                    </span>
-                </h2>
-                <p class="name2 mb-1">วันที่นัดหมาย : 17/04/2024</p>
-                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
-                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- กล่อง boxbox ที่ 4 -->
-    <div class="boxbox bg-white p-12 fade-in flex items-center relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
-        <div class="flex items-center justify-between w-full">
-            <div class="flex-shrink-0">
-                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
-            </div>
-            <div class="flex-grow mx-4">
-                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 1
-                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
-                        ได้รับการรักษาแล้ว
-                    </span>
-                </h2>
-                <p class="name2 mb-1">วันที่นัดหมาย : 21/08/2023</p>
-                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
-                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>
 
     <script>

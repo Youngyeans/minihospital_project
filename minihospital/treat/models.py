@@ -10,7 +10,7 @@ class TreatmentType(models.Model):
         return self.name
 
 class Treatment(models.Model):
-    treatmentType = models.ForeignKey(TreatmentType, on_delete=models.CASCADE)
+    treatment_type = models.ForeignKey(TreatmentType, on_delete=models.CASCADE)
     details = models.TextField()
     diagnose = models.TextField(null=True)
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
