@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from datetime import date
-from .forms import DoctorForm, AppointmentForm
+from .forms import DoctorForm, AppointmentForm, AppointmentEditForm
 from authen.models import Doctor, Patient
 from appoint.models import Appointment
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.utils.safestring import mark_safe
 import json
+from django.http import JsonResponse
 
 
 # function
@@ -106,11 +106,11 @@ def doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time):
         
         if appointment_day in doc.day:
 
-            if start_time_str in appoint_time :
-                updated_times.append((start_time_str, end_time_str, "appointment"))
-            elif (appointment_date.date() == today.date()):
+            if (appointment_date.date() == today.date()):
                 if current_time < today:
                     updated_times.append((start_time_str, end_time_str, "out_of_range"))
+                elif start_time_str in appoint_time :
+                    updated_times.append((start_time_str, end_time_str, "appointment"))
                 elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
                     updated_times.append((start_time_str, end_time_str, "in_range"))
                 else:
@@ -118,7 +118,10 @@ def doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time):
             elif (appointment_date.date() < today.date()):
                 updated_times.append((start_time_str, end_time_str, "out_of_range"))
             else:
-                updated_times.append((start_time_str, end_time_str, "in_range"))
+                if start_time_str in appoint_time :
+                    updated_times.append((start_time_str, end_time_str, "appointment"))
+                else:
+                    updated_times.append((start_time_str, end_time_str, "in_range"))
         else:
             updated_times.append((start_time_str, end_time_str, "out_of_range"))
         current_time = next_time
@@ -131,10 +134,7 @@ def doc_appoint(doc, appointment_date):
         appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
     ]
 
-    print(f"doc_appoint = {appoint_time}")
-
     return appoint_time
-
 
 class AppointTodayView(View):
 
@@ -353,7 +353,6 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
             'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
             'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
             'today_day' : today_day,
-            'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
         }
 
@@ -370,7 +369,6 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
         app_patient = Patient.objects.get(user=app.patient)
 
-        form = AppointmentForm(instance=app)
 
         doc = Doctor.objects.get(user=request.user)
         week = range(1, 8)
@@ -386,7 +384,58 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         doc.day = doc_shift(doc, today_day, "short")
 
         updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
+    
+        initial_data = {
+            'appointment_time': app.appointment_time.strftime("%H:%M")
+        }
+    
+        form = AppointmentEditForm(instance=app, initial=initial_data)
+        doc_days_json = mark_safe(json.dumps(doc.day))
 
+        # ส่งข้อมูลไปยัง template
+        context = {
+            'doc': doc,  # ข้อมูลหมอ
+            'week': week,  # ข้อมูลสัปดาห์
+            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
+            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
+            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
+            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'today_day' : today_day,
+            'appointment_date_str': appointment_date_str,
+            'app': app,
+            'app_patient':app_patient,
+            'current_date':current_date,
+            'form': form,
+            'appointment_time': appointment_time
+        }
+
+        if form.is_valid():
+            form.save()
+            return redirect('appoint:doc_appointment' ,current_date=current_date)
+
+        return render(request, 'doc_appointment_edit.html', context)
+    
+    def post(self, request, current_date, appointment_time):
+        app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
+        app_patient = Patient.objects.get(user=app.patient)
+
+
+        doc = Doctor.objects.get(user=request.user)
+        week = range(1, 8)
+
+        today = datetime.now()
+        today_day = day(today, "full")
+
+        appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
+        appointment_date_str = appointment_date.strftime("%d/%m/%Y")
+        appointment_day = day(appointment_date, "short")
+        appoint_time = doc_appoint(request.user, appointment_date)
+
+        doc.day = doc_shift(doc, today_day, "short")
+
+        updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
+    
+        form = AppointmentEditForm(request.POST, instance=app)
         doc_days_json = mark_safe(json.dumps(doc.day))
 
         # ส่งข้อมูลไปยัง template
@@ -402,7 +451,39 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
             'appointment_date_str': appointment_date_str,
             'app': app,
             'app_patient':app_patient,
-            'current_date':current_date
+            'current_date':current_date,
+            'form': form,
+            'appointment_time': appointment_time
         }
 
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    app = form.save(commit=False)
+                    appointment_time = form.cleaned_data["appointment_time"]
+
+                    # ตรวจสอบว่า appointment_time อยู่ใน appoint_time หรือไม่
+                    if appointment_time in appoint_time:
+                        form.add_error('appointment_time', 'มีนัดแล้วในเวลานี้ กรุณาเลือกเวลาอื่น')
+                        return render(request, 'doc_appointment_edit.html', context)
+                    else:
+                        print("update appointment")
+                        app.save()
+                        return redirect('appoint:doc_appointment', current_date=current_date)
+
+            except ObjectDoesNotExist:
+                print("ไม่มีสามารถแก้ไขนัดหมายได้")
+
         return render(request, 'doc_appointment_edit.html', context)
+    
+    def delete(self, request, current_date, appointment_time):
+        try:
+            app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
+            app.delete()  # Delete the appointment
+            return JsonResponse({'message': 'Appointment deleted successfully'}, status=200)
+        except Appointment.DoesNotExist:
+            return JsonResponse({'error': 'Appointment not found'}, status=404)
+        # app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
+        # app.delete()
+
+        # return JsonResponse({'foo':'bar'}, status=200)
