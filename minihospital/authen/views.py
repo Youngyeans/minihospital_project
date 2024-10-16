@@ -19,19 +19,21 @@ class LoginView(View):
         return render(request, 'login.html', {"form": form})
 
     def post(self, request):
-        form = AuthenticationForm(data=request.POST)
+        # form = AuthenticationForm(data=request.POST)
+        # current = datetime.now()
+        # current_date = current.strftime('%Y-%m-%d')
+        # if form.is_valid():
+        #     user = form.get_user() 
+        #     login(request,user)
+        #     if  hasattr(user, 'doctor'):
+        #         return redirect('appoint:doc_appointment', current_date=current_date)
+        #     else:
+        #         return redirect('main:home')
+
+        # return render(request,'login.html', {"form":form})
+        form = CustomAuthenticationForm()
         current = datetime.now()
         current_date = current.strftime('%Y-%m-%d')
-        if form.is_valid():
-            user = form.get_user() 
-            login(request,user)
-            if  hasattr(user, 'doctor'):
-                return redirect('appoint:doc_appointment', current_date=current_date)
-            else:
-                return redirect('main:home')
-
-        return render(request,'login.html', {"form":form})
-        form = CustomAuthenticationForm()
         
         username = request.POST["username"]
         password = request.POST["password"]
@@ -39,7 +41,11 @@ class LoginView(View):
         
         if user:
             login(request, user)
-            return redirect('main:home')
+            if  hasattr(user, 'doctor'):
+                return redirect('appoint:doc_appointment', current_date=current_date)
+            else:
+                return redirect('main:home')
+
         messages.error(request, 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!')
         return render(request, 'login.html', {"form": form})
 

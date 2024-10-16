@@ -85,7 +85,7 @@ class AppointmentForm(ModelForm):
         })
     )
 
-    start_sympDate = forms.DateField(
+    start_sympdate = forms.DateField(
         input_formats=['%d/%m/%Y'],  # รองรับรูปแบบ dd/mm/yyyy
         widget=TextInput(attrs={
             'id': 'sympDate',
@@ -101,7 +101,7 @@ class AppointmentForm(ModelForm):
             "appointment_date",
             "appointment_time",
             "symptom",
-            "start_sympDate",
+            "start_sympdate",
             "temperature",
         ]
         widgets = {
@@ -129,7 +129,7 @@ class AppointmentForm(ModelForm):
         cleaned_data = super().clean()
         appointment_date = cleaned_data.get('appointment_date')
         appointment_time = cleaned_data.get('appointment_time')
-        start_sympDate = cleaned_data.get('start_sympDate')
+        start_sympdate = cleaned_data.get('start_sympdate')
         temperature = float(cleaned_data.get('temperature'))
 
         if appointment_date and appointment_time:
@@ -138,10 +138,10 @@ class AppointmentForm(ModelForm):
             if appointment_datetime < datetime.now():
                 raise forms.ValidationError('วันและเวลาที่จองต้องไม่เป็นอดีต')
             
-        if not start_sympDate:
+        if not start_sympdate:
             raise forms.ValidationError('กรุณากรอกวันที่เริ่มมีอาการ')
         else:
-            if start_sympDate > appointment_date:
+            if start_sympdate > appointment_date:
                 raise forms.ValidationError('วันที่เริ่มมีอาการควรเป็นอดีต')
         
         if temperature > 37.2 or temperature < 36.1:
