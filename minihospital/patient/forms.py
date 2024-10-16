@@ -29,12 +29,6 @@ class PatientEditProfileForm(forms.ModelForm):
         ("รัสเซีย", "รัสเซีย"),
     )
 
-    GENDER_CHOICES = (
-        ('เพศ', 'เพศ'),
-        ('ชาย', 'ชาย'),
-        ('หญิง', 'หญิง')
-    )
-
     BLOOD_GROUP_CHOICES = (
         ('กรุ๊ปเลือด', 'กรุ๊ปเลือด'),
         ("A+", "A+"),
@@ -48,7 +42,6 @@ class PatientEditProfileForm(forms.ModelForm):
     )
 
     nationality = forms.ChoiceField(choices=NATIONALITY_CHOICES)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES)
 
     class Meta:

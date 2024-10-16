@@ -120,8 +120,10 @@ def doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time):
             else:
                 if start_time_str in appoint_time :
                     updated_times.append((start_time_str, end_time_str, "appointment"))
-                else:
+                elif start_bound <= current_time < end_bound and start_bound < next_time <= end_bound:
                     updated_times.append((start_time_str, end_time_str, "in_range"))
+                else:
+                    updated_times.append((start_time_str, end_time_str, "out_of_range"))
         else:
             updated_times.append((start_time_str, end_time_str, "out_of_range"))
         current_time = next_time
@@ -135,6 +137,15 @@ def doc_appoint(doc, appointment_date):
     ]
 
     return appoint_time
+
+def patient_appoint(patient, appointment_date):
+    appointments = Appointment.objects.filter(patient=patient, appointment_date=appointment_date)
+    appoint_time = [
+        appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
+    ]
+
+    return appoint_time
+
 
 class AppointTodayView(View):
 
@@ -246,7 +257,7 @@ class AppointmentView(LoginRequiredMixin,View):
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
         appointment_day = day(appointment_date, "short")
-        appoint_time = doc_appoint(doc.user, appointment_date)
+        appoint_time = doc_appoint(doc, appointment_date) + patient_appoint(request.user.patient, appointment_date)
 
         doc.day = doc_shift(doc, today_day, "short")
 
@@ -257,6 +268,11 @@ class AppointmentView(LoginRequiredMixin,View):
         updated_times = doc_Schedule(appointment_date, appointment_day, doc, today, appoint_time)
 
         doc_days_json = mark_safe(json.dumps(doc.day))
+
+        # try:
+        #     app = Appointment.objects.get(patient=request.user.patient, appointment_date=appointment_date)
+        # except Appointment.DoesNotExist:
+        #     app = None
 
 
         context = {
@@ -288,7 +304,7 @@ class AppointmentView(LoginRequiredMixin,View):
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
         appointment_day = day(appointment_date, "short")
-        appoint_time = doc_appoint(doc.user, appointment_date)
+        appoint_time = doc_appoint(doc, appointment_date) + patient_appoint(request.user.patient, appointment_date)
 
         doc.day = doc_shift(doc, today_day, "short")
 
@@ -300,14 +316,14 @@ class AppointmentView(LoginRequiredMixin,View):
 
 
         context = {
-            'doc': doc,  # ข้อมูลหมอ
-            'week': week,  # ข้อมูลสัปดาห์
-            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
-            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            'form': form,  # ฟอร์มนัดหมาย
-            'previous': previous,  # หน้าที่มาก่อน
-            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
-            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'doc': doc,
+            'week': week,
+            'start': doc.start_time.strftime("%H:%M"),
+            'end': doc.end_time.strftime("%H:%M"),
+            'form': form, 
+            'previous': previous, 
+            'updated_times': updated_times,
+            'doc_days_json': doc_days_json,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
             'current_date': current_date
@@ -316,12 +332,24 @@ class AppointmentView(LoginRequiredMixin,View):
         
         if form.is_valid():
             app = form.save(commit=False)
-            app.patient = request.user
-            app.doctor = doc.user
-            app.save()
-            return redirect('appoint:appoint-today')
+            appointment_date = form.cleaned_data["appointment_date"]
+            
+            try:
+                appoints = Appointment.objects.get(patient=request.user.patient, appointment_date=appointment_date, doctor=doc)
+            except Appointment.DoesNotExist:
+                appoints = None
+
+            if appoints:
+                form.add_error('appointment_date', 'คุณมีนัดของแพทย์ท่านนี้แล้ว กรุณาเลือกวันอื่น')
+                return render(request, 'appointment.html', context)
+            else:
+                app.patient = request.user.patient
+                app.doctor = doc
+                app.save()
+                return redirect('appoint:appoint-today')
 
         return render(request, 'appointment.html', context)
+            
 
 
 class DoctorAppointmentView(LoginRequiredMixin,View):
@@ -346,12 +374,12 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
         doc_days_json = mark_safe(json.dumps(doc.day))
 
         context = {
-            'doc': doc,  # ข้อมูลหมอ
-            'week': week,  # ข้อมูลสัปดาห์
-            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
-            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
-            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'doc': doc,
+            'week': week,
+            'start': doc.start_time.strftime("%H:%M"),
+            'end': doc.end_time.strftime("%H:%M"),
+            'updated_times': updated_times,
+            'doc_days_json': doc_days_json,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
         }
@@ -392,14 +420,14 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         form = AppointmentEditForm(instance=app, initial=initial_data)
         doc_days_json = mark_safe(json.dumps(doc.day))
 
-        # ส่งข้อมูลไปยัง template
+
         context = {
-            'doc': doc,  # ข้อมูลหมอ
-            'week': week,  # ข้อมูลสัปดาห์
-            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
-            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
-            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'doc': doc,
+            'week': week,
+            'start': doc.start_time.strftime("%H:%M"),
+            'end': doc.end_time.strftime("%H:%M"),
+            'updated_times': updated_times,
+            'doc_days_json': doc_days_json,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
             'app': app,
@@ -438,14 +466,13 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         form = AppointmentEditForm(request.POST, instance=app)
         doc_days_json = mark_safe(json.dumps(doc.day))
 
-        # ส่งข้อมูลไปยัง template
         context = {
-            'doc': doc,  # ข้อมูลหมอ
-            'week': week,  # ข้อมูลสัปดาห์
-            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
-            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
-            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'doc': doc,
+            'week': week,
+            'start': doc.start_time.strftime("%H:%M"),
+            'end': doc.end_time.strftime("%H:%M"),
+            'updated_times': updated_times,
+            'doc_days_json': doc_days_json,
             'today_day' : today_day,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
@@ -462,7 +489,6 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
                     app = form.save(commit=False)
                     appointment_time = form.cleaned_data["appointment_time"]
 
-                    # ตรวจสอบว่า appointment_time อยู่ใน appoint_time หรือไม่
                     if appointment_time in appoint_time:
                         form.add_error('appointment_time', 'มีนัดแล้วในเวลานี้ กรุณาเลือกเวลาอื่น')
                         return render(request, 'doc_appointment_edit.html', context)
@@ -479,11 +505,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
     def delete(self, request, current_date, appointment_time):
         try:
             app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
-            app.delete()  # Delete the appointment
+            app.delete()
             return JsonResponse({'message': 'Appointment deleted successfully'}, status=200)
         except Appointment.DoesNotExist:
             return JsonResponse({'error': 'Appointment not found'}, status=404)
-        # app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
-        # app.delete()
-
-        # return JsonResponse({'foo':'bar'}, status=200)

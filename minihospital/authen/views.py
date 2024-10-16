@@ -19,18 +19,6 @@ class LoginView(View):
         return render(request, 'login.html', {"form": form})
 
     def post(self, request):
-        # form = AuthenticationForm(data=request.POST)
-        # current = datetime.now()
-        # current_date = current.strftime('%Y-%m-%d')
-        # if form.is_valid():
-        #     user = form.get_user() 
-        #     login(request,user)
-        #     if  hasattr(user, 'doctor'):
-        #         return redirect('appoint:doc_appointment', current_date=current_date)
-        #     else:
-        #         return redirect('main:home')
-
-        # return render(request,'login.html', {"form":form})
         form = CustomAuthenticationForm()
         current = datetime.now()
         current_date = current.strftime('%Y-%m-%d')
