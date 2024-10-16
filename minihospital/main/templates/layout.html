@@ -62,9 +62,9 @@
 
                         {% if not user.doctor %}
                             <div id="dropdownMenu" class="hidden absolute -bottom-[130px] rounded-[20px] bg-white border border-[#eaeaea] grid grid-cols-1 gap-1 py-3">
-                                <a href="{% url 'patient:profile' %}"class="text-[#494949] text-base font-normal mx-5">โปรไฟล์ผู้ใช้</a>
+                                <a href="{% url 'patient:profile' pk=user.pk %}"class="text-[#494949] text-base font-normal mx-5">โปรไฟล์ผู้ใช้</a>
                                 <hr class="w-full border border-[#eaeaea]">
-                                <a href="{% url 'treat:treatment-list' %}" class="text-[#494949] text-base font-normal mx-5">ประวัติการรักษา</a>
+                                <a href="{% url 'treat:treatment-list' pk=user.pk %}" class="text-[#494949] text-base font-normal mx-5">ประวัติการรักษา</a>
                                 <hr class="w-full border border-[#eaeaea]">
                                 <a href="{% url 'authen:logout' %}" class="text-[#15cdcb] text-base font-normal underline mx-5">ออกจากระบบ</a>
                             </div>
