@@ -19,19 +19,9 @@
         <div class="text-center text-[#909090] text-[20px] font-normal">{{doc.prefix}} {{doc.user.first_name}} {{doc.user.last_name}}</div>
     </div>
 
-    <!-- <div class="w-[963px] h-[0px] left-[239px] top-[976px] absolute border border-[#eaeaea]"></div>
-    <div class="w-[963px] h-[0px] left-[239px] top-[1036px] absolute border border-[#eaeaea]"></div> -->
-    <!-- <div class="left-[150px] top-[1380px] absolute text-[#3d5279] text-[32px] font-medium font-['Kanit'] leading-[55px]">อาการ   </div> -->
-    <form method="post">
-        {% csrf_token %}
-        <div class="text-red-500 mb-4">
-            {{ form.nonfield_errors }}
-        </div>
-        
-        <div class="text-red-500 mb-4">
-            {{ form.errors }}
-        </div>
         <div class="container m-5 flex space-x-6 justify-center items-center p-5">
+
+            <!-- ข้อมูลหมอ -->
             <div class="bg-white rounded-[20px] shadow w-[600px] p-10">
                 <div class="flex space-x-4">
                     <div class="w-full h-auto mt-2">
@@ -58,17 +48,27 @@
                 <div class="text-[#909090] text-lg font-normal">{{ doc.description }} </div>
             </div>
             
+            <!-- กรอกวันที่ต้องการนัด -->
             <div class="h-auto w-full flex flex-col items-center">
                 <div class="w-full flex space-x-5 items-center justify-between">
                     <div class="text-center text-[#3d5279] text-[32px] font-semibold">นัดหมายแพทย์</div>
-                    <div class="w-[350px] flex items-center relative">
-                        {{ form.appointment_date }}
-                        <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
+                    <div class="flex space-x-5 items-center">
+                        <div class="w-[350px] flex items-center relative">
+                            <input 
+                                    type="text" 
+                                    id="startDate" 
+                                    class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" 
+                                    placeholder="dd/mm/yyyy" 
+                                    oninput="updateDates()"
+                                    value={{appointment_date_str}}
+                                />
+                            <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('startDate')" class="cursor-pointer absolute right-6" width="27" height="27">
+                        </div>
+                        <button onclick="sendLink()" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-[16px] font-medium px-4  py-2">เลือกวัน</button>
                     </div>
-                    <script src="{% static 'js/dateInput.js' %}"></script>
 
                 </div>
-                <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันนัดหมายที่ต้องการ</div>
+                <div class="w-full text-start text-[#909090] text-lg font-normal">กรุณาเลือกวันที่ต้องการ</div>
                 
                 <div class="flex justify-between items-center">
                     
@@ -76,22 +76,10 @@
                     
                     <div id="dateGrid" class="grid grid-cols-7 grid-cols-1 gap-[26px] m-16">
                         {% for i in week %}
-                        <!-- {% if i == 1 %}
-                        <div class="relative bg-[#15CDCB] text-white rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div class="text-center text-lg font-normal">พฤ.</div>
-                            <div class="absolute -top-10 text-[#909090] text-lg font-normal">วันที่เลือก</div>
-                        </div>
-                        {% else %}
-                        <div class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div class="text-center text-lg font-normal">พฤ.</div>
-                        </div>
-                        {% endif %}-->
-                        <div id="date{{i}}" class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
-                            <div class="text-center text-[32px] font-medium">27</div>
-                            <div id="day{{i}}" class="text-center text-lg font-normal">พฤ.</div>
-                        </div>
+                            <div class="relative bg-[#E1F6F5] text-[#3E5279] rounded-[10px] flex flex-col justify-center items-center p-6">
+                                <div id="day{{i}}" class="text-center text-lg font-normal"></div>
+                                <div id="date{{i}}" class="text-center text-[32px] font-medium"></div>
+                            </div>
                         {% endfor %}
                     </div>
                     
@@ -101,15 +89,51 @@
                 
                 
             </div>
+
+            <script>
+                function sendLink() {
+                    // รับค่าจากฟิลด์ startDate
+                    const input = document.getElementById('startDate').value;
+                    
+                    // ตรวจสอบว่า input มีค่า
+                    if (!input) {
+                        alert("กรุณากรอกวันที่ก่อนส่งลิงค์");
+                        return;
+                    }
+                    
+                    // แยกวันที่จากรูปแบบ dd/mm/yyyy
+                    const parts = input.split('/');
+                    if (parts.length !== 3) {
+                        alert("รูปแบบวันที่ไม่ถูกต้อง กรุณากรอกวันที่ในรูปแบบ dd/mm/yyyy");
+                        return;
+                    }
+                    
+                    const day = parts[0];
+                    const month = parts[1];
+                    const year = parts[2];
+            
+                    // แปลงวันที่เป็นรูปแบบ Y-m-d
+                    const formattedDate = `${year}-${month}-${day}`;
+                    
+                    // สร้าง URL ใหม่ (คุณสามารถกำหนดรูปแบบ URL ได้ตามที่ต้องการ)
+                    const doctorId = "{{ doc.id }}";  // รับค่า doctor.id จาก Django หรือจะใช้ค่าอื่นที่คุณต้องการ
+                    const newUrl = `/hopelife/doctor_appointment/${formattedDate}/`;  // เปลี่ยน URL ตามที่คุณต้องการ
+            
+                    // ตรวจสอบว่า URL ถูกต้องหรือไม่
+                    console.log("New URL:", newUrl);
+                    
+                    // เปลี่ยนหน้าไปยัง URL ใหม่
+                    window.location.href = newUrl;
+                }
+            </script>
             
         </div>
         
         <div class="container my-5 mx-20 flex justify-center items-center p-5 flex-col">
             <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold" id="formattedDate"></div>
-            <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณาเลือกเวลานัดหมาย</div>
+            <div class="text-[#909090] text-lg font-normal text-start w-full ">หากต้องการแก้ไขการนัดหมาย กรุณากดที่เวลาที่ต้องการแก้</div>
 
-            {{ form.appointment_time }}
-
+            <!-- เลือกเวลานัด  -->
             <div class="grid grid-cols-6 gap-2 my-16">
                 {% for start_time, end_time, status in updated_times %}
                     {% if start_time|slice:":2" == "12" %}
@@ -119,22 +143,37 @@
                             </div>
                         {% endif %}
                     {% else %}
-                        {% if status == "in_range" %}
-                            <div class="time-slot bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
-                                <div class="text-[#3d5279] text-lg font-normal">{{ start_time }}</div>
-                                <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
-                                <div class="text-[#3d5279] text-lg font-normal">{{ end_time }}</div>
-                            </div>
-                        {% else %}
-                            <div class="bg-[#EBEBEB] rounded-[20px] flex space-x-3 py-3 px-5" data-start="{{ start_time }}">
-                                <div class="text-[#C8C8C8] text-lg font-normal">{{ start_time }}</div>
-                                <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
-                                <div class="text-[#C8C8C8] text-lg font-normal">{{ end_time }}</div>
-                            </div>
-                        {% endif %}
+                            {% if status == "appointment" %}
+                                <div class="time-slot bg-[#15cdcb] rounded-[20px] flex space-x-3 py-3 px-5 cursor-pointer" data-start="{{ start_time }}">
+                                    <div class="text-white text-lg font-normal">{{ start_time }}</div>
+                                    <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
+                                    <div class="text-white text-lg font-normal">{{ end_time }}</div>
+                                </div>
+                            {% elif status == "in_range" %}
+                                <div class="bg-[#e1f6f5] rounded-[20px] flex space-x-3 py-3 px-5">
+                                    <div class="text-[#3d5279] text-lg font-normal">{{ start_time }}</div>
+                                    <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
+                                    <div class="text-[#3d5279] text-lg font-normal">{{ end_time }}</div>
+                                </div>
+                            {% else %}
+                                <div class="bg-[#EBEBEB] rounded-[20px] flex space-x-3 py-3 px-5">
+                                    <div class="text-[#C8C8C8] text-lg font-normal">{{ start_time }}</div>
+                                    <img class="" width="22" height="22" src="{% static 'image/arrow.png' %}" />
+                                    <div class="text-[#C8C8C8] text-lg font-normal">{{ end_time }}</div>
+                                </div>
+                            {% endif %}
+
+
+
                     {% endif %}
                 {% endfor %}
             </div>
+
+            <form id="appointmentForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="appointment_time" id="appointment_time" value="">
+                <button type="submit" id="submitAppointment" class="hidden"></button>
+            </form>
             
             
             <script>
@@ -150,42 +189,83 @@
                         const appointmentTime = this.getAttribute('data-start');
                         
                         // กำหนดค่าให้กับ input hidden ที่จะส่งไปกับ form
-                        document.querySelector('input[name="appointment_time"]').value = appointmentTime;
+                        document.getElementById('appointment_time').value = appointmentTime;
+                        {% comment %} document.getElementById('validation_time').innerText= "เวลานัดหมาย : " + appointmentTime; {% endcomment %}
                         
                         // แสดงผลเวลาเพื่อทดสอบ (optional)
                         console.log(`Selected appointment time: ${appointmentTime}`);
+                        
+                        // ส่งฟอร์มไปยัง server
+                        document.getElementById('submitAppointment').click();
                     });
                 });
-                </script>
-
-        <div class="text-start w-full text-[#3d5279] text-[32px] font-semibold">อาการ</div>
-        <div class="text-[#909090] text-lg font-normal text-start w-full ">กรุณากรอกรายละเอียดเพื่อการรักษาที่ถูกต้อง</div>
-
-        <div class="w-full flex justify-start">
-            <div class="flex justify-center items-center grid grid-cols-[auto,1fr] gap-y-5">
-    
-                <div class="text-[#494949] text-lg font-normal">อาการ :</div>
-                {{ form.symptom }}
+            </script>
+            
+            <!-- Pop-up Container -->
+            {% comment %} <form method="post">
+                {% csrf_token %}
+                <div class="text-red-500 mb-4">
+                    {{ form.nonfield_errors }}
+                </div>
                 
-                <div class="text-[#494949] text-lg font-normal">มีอาการตั้งแต่  : </div>
-                <div class="w-[350px] flex items-center relative">
-                    {{ form.start_sympDate }}
-                    <img src="{% static 'image/greycalendar.png' %}" onclick="openDatePicker('sympDate')"  class="cursor-pointer absolute right-6" width="27" height="27">
+                <div class="text-red-500 mb-4">
+                    {{ form.errors }}
                 </div>
-    
-                <div class="text-[#494949] text-lg font-normal">อุณภูมิร่างกาย : </div>
-                <div class="relative flex items-center w-[350px]">
-                    {{ form.temperature }}
-                    <!-- <input placeholder="xx.x" class="py-3 px-6 w-full text-[#c7c7c7] text-base font-normal bg-[#efefef] rounded-full"> -->
-                    <div class="absolute text-[#c7c7c7] text-base font-normal right-[35px]">องศาเซลเซียส</div>
-                </div>
-    
-            </div>
-        </div>
+                <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
+                        <div class="text-start text-[#3d5279] text-[32px] font-semibold">ยืนยันการนัดหมาย</div>
+                        <div class="text-start text-[#909090] text-base font-normal">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</div>
+                        <div class="flex space-x-16 mt-10">
+                            <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
+                                <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
+                            </div>
 
-        <button type="submit" class="bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
-    
+                            <div>
+                                <div class="text-[#494949] text-base font-normal">ผู้ป่วย : {{ user.patient.prefix }} {{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="text-[#494949] text-base font-normal">แพทย์ : {{ doc.prefix }} {{ doc.user.first_name }} {{ doc.user.last_name }}</div>
+                                <div class="text-[#494949] text-base font-normal">แผนก :
+                                    <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
+                                        {{ doc.department }}
+                                    </div>
+                                </div>
+                                <div id="validateDate" class="text-[#494949] text-base font-normal">วันที่นัดหมาย : {{appointment_date_str}}</div>
+                                <div id="validation_time" class="text-[#494949] text-base font-normal"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center mt-10">
+                            <button type="submit" class="py-2 px-12 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] inline-block text-center text-white text-xl font-medium">
+                                ยืนยันการนัดหมาย
+                            </button>
+                        </div>
+
+                        <!-- ปุ่มปิด pop-up -->
+                        <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
+                    </div>
+                </div>
+            </form> {% endcomment %}
+
+            {% comment %} <script>
+                function togglePopup() {
+                    const popup = document.getElementById('popup');
+                    popup.classList.toggle('hidden'); // ซ่อนหรือแสดง popup
+                }
+            
+                // ผูก event กับปุ่ม "จองคิวพบแพทย์"
+                document.getElementById('edit').addEventListener('click', function(event) {
+                    event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
+                    togglePopup(); // แสดงหรือซ่อน pop-up
+                });
+            </script> {% endcomment %}
+        
+        </div>
+        
     </form>
 </div>
+
+<script type="application/json" id="docDaysData">
+    {{ doc_days_json }}
+</script>
+<script src="{% static 'js/dateInput.js' %}"></script>
 
 {% endblock %}
