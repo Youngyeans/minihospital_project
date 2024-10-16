@@ -365,7 +365,7 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
         appointment_day = day(appointment_date, "short")
-        appoint_time = doc_appoint(request.user, appointment_date)
+        appoint_time = doc_appoint(request.user.doctor, appointment_date)
 
         doc.day = doc_shift(doc, today_day, "short")
 
@@ -394,8 +394,8 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
 
 class DoctorAppointmentEditView(LoginRequiredMixin,View):
     def get(self, request, current_date, appointment_time):
-        app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
-        app_patient = Patient.objects.get(user=app.patient)
+        app = Appointment.objects.get(appointment_date=current_date, doctor=request.user.doctor, appointment_time=appointment_time)
+        app_patient = Patient.objects.get(pk=app.patient.id)
 
 
         doc = Doctor.objects.get(user=request.user)
@@ -407,7 +407,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
         appointment_day = day(appointment_date, "short")
-        appoint_time = doc_appoint(request.user, appointment_date)
+        appoint_time = doc_appoint(request.user.doctor, appointment_date)
 
         doc.day = doc_shift(doc, today_day, "short")
 
@@ -444,8 +444,8 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         return render(request, 'doc_appointment_edit.html', context)
     
     def post(self, request, current_date, appointment_time):
-        app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
-        app_patient = Patient.objects.get(user=app.patient)
+        app = Appointment.objects.get(appointment_date=current_date, doctor=request.user.doctor, appointment_time=appointment_time)
+        app_patient = Patient.objects.get(pk=app.patient.id)
 
 
         doc = Doctor.objects.get(user=request.user)
@@ -457,7 +457,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
         appointment_day = day(appointment_date, "short")
-        appoint_time = doc_appoint(request.user, appointment_date)
+        appoint_time = doc_appoint(request.user.doctor, appointment_date)
 
         doc.day = doc_shift(doc, today_day, "short")
 

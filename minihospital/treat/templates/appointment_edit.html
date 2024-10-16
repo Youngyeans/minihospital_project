@@ -190,14 +190,112 @@
                         <p class="name3 font-medium">{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p> 
                     </div>
                     <div>
-                        <a href="{% url 'treat:appointment_edit' user.id appointment.pk %}" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
-                            แก้ไขนัดหมาย
+                        <a href="#" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
+                            ยกเลิกนัดหมาย
                          </a>
                     </div>
                 </div>
             </div>
     {% endfor %}
-</div>
+    
+    <!-- Pop-up Container -->
+    <form method="post">
+        {% csrf_token %}
+        <!-- <div class="text-red-500 mb-4">
+            {{ form.nonfield_errors }}
+        </div> -->
+        
+        <!-- <div class="text-red-500 mb-4">
+            {{ form.errors }}
+        </div> -->
+        <div id="popup" class="z-[101] fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
+                <div class="text-start text-[#3d5279] text-[32px] font-semibold">แก้ไขการนัดหมาย</div>
+                <div class="text-start text-[#909090] text-base font-normal">กรุณาแก้ไขข้อมูลให้ถูกต้อง</div>
+                <div class="text-red-500 mb-4">
+                    {{ form.errors }}
+                </div>
+                <div class="flex space-x-12 mt-10 items-center">
+                    <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
+                        <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
+                    </div>
+
+                    <div>
+                        <div class="text-[#494949] text-base font-normal">ผู้ป่วย : {{ user.patient.prefix }} {{user.first_name}} {{user.last_name}}</div>
+                        <div class="text-[#494949] text-base font-normal">แพทย์ : {{ doc.prefix }} {{ doc.user.first_name }} {{ doc.user.last_name }}</div>
+                        <div class="text-[#494949] text-base font-normal">แผนก :
+                            <div class="bg-[#d2e0ff] rounded-[30px] text-left text-[#6986c4] text-base font-normal py-1 px-5 inline-block">
+                                {{ doc.department }}
+                            </div>
+                        </div>
+                        <div class="text-[#494949] text-base font-normal flex items-center flex items-center space-x-5 my-5">
+                            <div>วันที่นัดหมาย : </div>
+                            {{form.appointment_date}}
+                        </div>
+                        <div class="text-[#494949] text-base font-normal flex items-center space-x-5">
+                            <div>เวลานัดหมาย : </div>
+                            {{form.appointment_time }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-10 mb-5 mx-10">
+                    <button type="button" onclick="deleteAppointment({{user.id}}, {{app.id}})" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
+                    ยกเลิกนัดหมาย
+                    </button>
+
+                    <script>
+                        function deleteAppointment(user_id, app_id) {
+                            const csrfToken = '{{ csrf_token }}'; // Get CSRF token
+                            const url = `/hopelife/treatment/${user_id}/edit/${app_id}/`;
+                    
+                            fetch(url, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRFToken': csrfToken, // Include CSRF token in header
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('นัดหมายถูกยกเลิกเรียบร้อยแล้ว');
+                                    window.location.href = `/hopelife/treatment/${user_id}/`; // Use template literals correctly
+                                } else {
+                                    alert('ไม่สามารถยกเลิกนัดหมายได้');
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        }
+                    </script>
+
+                    <button type="submit" class="bg-gradient-to-r p-3 px-5 from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium">
+                        แก้ไขการนัดหมาย
+                    </button>
+                </div>
+
+                <!-- ปุ่มปิด pop-up -->
+                <a href="{% url 'treat:treatment-list' user.id %}">
+                    <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
+                </a>
+            </div>
+        </div>
+    </form>
+
+    </div>
+
+    <script>
+        function togglePopup() {
+            const popup = document.getElementById('popup');
+            popup.classList.toggle('hidden'); // ซ่อนหรือแสดง popup
+        }
+
+        // ผูก event กับปุ่ม "จองคิวพบแพทย์"
+        document.getElementById('edit').addEventListener('click', function(event) {
+            event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
+            togglePopup(); // แสดงหรือซ่อน pop-up
+        });
+    </script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
