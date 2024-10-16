@@ -124,55 +124,48 @@
 {% endblock %}
 
 {% block content %}
+{% for appointment in appointments %}
     <div class="container w-full mx-auto pt-12 pb-20 px-36 fade-in">
         <div class="flex">
-            <a href="{% url 'treat:treatment-list' %}">
+            <a href="{% url 'treat:treatment-list' pk=user.pk %}">
                 <svg class="name2 mt-3 mr-6 cursor-pointer" width="50" height="50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 5l-7 7 7 7"/>
                 </svg>
             </a>              
             <h1 class="personal font-medium mb-14 flex items-center">
-                หมายเลขนัดหมายที่ 3
+                หมายเลขนัดหมายที่  {{ appointment.id }}
                 <span class="ml-4 already text-white text-base px-6 py-1 rounded-full flex items-center">
                     ได้รับการรักษาแล้ว
                 </span>
             </h1>
         </div>
         
-
-        <!-- กล่อง boxbox ที่ 1 -->
         <div class="boxbox bg-white p-12 fade-in mb-10 relative">
 
             <div class="space-y-4"></div>
                 <div class="flex items-center">
                     <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24fade-in">
                     <div class="flex-grow mx-4">
-                        <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 4</h2>
-                        <p class="name2 mb-1">วันที่นัดหมาย : xx/xx/xxxx</p>
-                        <p class="name2 mb-2">ผลวินิจฉัย : -</p>
-                        <p class="name3 font-medium">นพ. ปรัชญา มณีปัญญา</p>
+                        <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่  {{ appointment.id }}</h2>
+                        <p class="name2 mb-1">วันที่นัดหมาย : {{ appointment.appointment_date|date:"d/m/Y" }}</p>
+                        <p class="name3 font-medium">{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p>
                     </div>
                 </div>
-
-                <div class="p-16">
-                    <h2 class="name2 mb-1">ชื่อการรักษา : พบแพทย์</h2>
-                    <p class="name2 mb-1">คำอธิบายการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-                    <p class="name2 mb-1">รายละเอียดการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-                    <p class="name2 mb-1">ผลวินิจฉัย : xxxxxxxxxx</p>
-                </div>
-
-                <div class="px-16">
-                    <h2 class="name2 mb-1">ชื่อการรักษา : xxxxxxxx</h2>
-                    <p class="name2 mb-1">คำอธิบายการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-                    <p class="name2 mb-1">รายละเอียดการรักษา : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-                </div>
-            </div>
-            
-        
+                
+                {% for treatment in treatments %}
+                    {% if treatment.appointment == appointment %}
+                        <div class="p-16">
+                            <h2 class="name2 mb-1">ชื่อการรักษา : {{ treatment.treatment_type.name }}</h2>
+                            <p class="name2 mb-1">คำอธิบายการรักษา : {{ treatment.treatment_type.description }}</p>
+                            <p class="name2 mb-1">รายละเอียดการรักษา : {{ treatment.details}}</p>
+                            <p class="name2 mb-1">ผลวินิจฉัย : {{ treatment.diagnose }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>   
         </div>
     </div>
-
-
+{% endfor %}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -8,7 +8,7 @@ class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     symptom = models.TextField()
-    start_sympDate = models.DateField()
+    start_sympdate = models.DateField()
     temperature = models.DecimalField(max_digits=10, decimal_places=2)
     note = models.TextField(blank=True, null=True)
 
