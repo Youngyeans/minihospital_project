@@ -36,7 +36,7 @@ class TreatmentListView(LoginRequiredMixin, PermissionRequiredMixin, View):
         user = User.objects.get(pk=pk)
         patient = Patient.objects.get(user=user)
 
-        appointments = Appointment.objects.filter(patient=patient).annotate(treat_count=Count('treatment')).order_by('-appointment_date')
+        appointments = Appointment.objects.filter(patient=patient).annotate(treat_count=Count('treatment')).order_by('-id')
         treatments = Treatment.objects.filter(appointment__in=appointments)
 
         for app in appointments:

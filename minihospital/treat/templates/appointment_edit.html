@@ -189,11 +189,13 @@
                         {% endfor %}
                         <p class="name3 font-medium">{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p> 
                     </div>
+                    {% if appointment.treat_count == 0 %}
                     <div>
-                        <a href="#" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
+                        <a href="{% url 'treat:appointment_edit' user.id appointment.pk %}" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
                             แก้ไขนัดหมาย
                          </a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
     {% endfor %}

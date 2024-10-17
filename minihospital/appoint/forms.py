@@ -88,7 +88,7 @@ class AppointmentForm(ModelForm):
     start_sympdate = forms.DateField(
         input_formats=['%d/%m/%Y'], 
         widget=TextInput(attrs={
-            'id': 'sympDate',
+            'id': 'sympdate',
             'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
             'placeholder': 'dd/mm/yyyy',
             'required': 'required',

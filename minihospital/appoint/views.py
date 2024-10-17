@@ -199,6 +199,8 @@ class DoctorListView(View):
         search = request.GET.get('search')
         print("search = {search}")
 
+        doctor_list = Doctor.objects.all().order_by('id')
+
         if department and department != "ทั้งหมด":
             doctor_list = doctor_list.filter(department__name=department)
         else:
@@ -275,7 +277,7 @@ class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         week = range(1, 8)
 
         today = datetime.now()
-        today_day = day(today, "full")
+        today_day = day(today, "short")
         
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
@@ -317,7 +319,7 @@ class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         week = range(1, 8)
 
         today = datetime.now()
-        today_day = day(today, "full")
+        today_day = day(today, "short")
         
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
@@ -379,7 +381,7 @@ class DoctorAppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         week = range(1, 8)
 
         today = datetime.now()
-        today_day = day(today, "full")
+        today_day = day(today, "short")
 
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
@@ -424,7 +426,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, Vie
         week = range(1, 8)
 
         today = datetime.now()
-        today_day = day(today, "full")
+        today_day = day(today, "short")
 
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
@@ -474,7 +476,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, Vie
         week = range(1, 8)
 
         today = datetime.now()
-        today_day = day(today, "full")
+        today_day = day(today, "short")
 
         appointment_date = datetime.strptime(current_date, '%Y-%m-%d')
         appointment_date_str = appointment_date.strftime("%d/%m/%Y")
@@ -495,7 +497,6 @@ class DoctorAppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, Vie
             'end': doc.end_time.strftime("%H:%M"),
             'updated_times': updated_times,
             'doc_days_json': doc_days_json,
-            'today_day' : today_day,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
             'app': app,
@@ -528,7 +529,7 @@ class DoctorAppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, Vie
     
     def delete(self, request, current_date, appointment_time):
         try:
-            app = Appointment.objects.get(appointment_date=current_date, doctor=request.user, appointment_time=appointment_time)
+            app = Appointment.objects.get(appointment_date=current_date, doctor=request.user.doctor, appointment_time=appointment_time)
             app.delete()
             return JsonResponse({'message': 'Appointment deleted successfully'}, status=200)
         except Appointment.DoesNotExist:
