@@ -13,6 +13,7 @@ from django.core.paginator import Paginator
 from django.utils.safestring import mark_safe
 import json
 from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 # function
@@ -220,7 +221,9 @@ class DoctorListView(View):
         return render(request, 'doctor-list.html', context)
     
 
-class CreateDoctorView(View):
+class CreateDoctorView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["doctor.add_doctor", "user.add_user"]
 
     def get(self, request):
         form = DoctorForm()
@@ -263,8 +266,9 @@ class CreateDoctorView(View):
             "form": form
         })
     
-class AppointmentView(LoginRequiredMixin,View):
-    login_url = "/hopelife/login/"
+class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["appoint.add_appointment"]
     
     def get(self, request, doctor_id, current_date):
         doc = Doctor.objects.get(pk=doctor_id)
@@ -366,8 +370,9 @@ class AppointmentView(LoginRequiredMixin,View):
             
 
 
-class DoctorAppointmentView(LoginRequiredMixin,View):
-    login_url = "/hopelife/login/"
+class DoctorAppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["appoint.view_appointment"]
 
     def get(self, request, current_date):
         doc = Doctor.objects.get(user=request.user)
@@ -406,7 +411,10 @@ class DoctorAppointmentView(LoginRequiredMixin,View):
 
         return redirect('appoint:doc_appointment_edit', current_date=current_date, appointment_time=appointment_time)
 
-class DoctorAppointmentEditView(LoginRequiredMixin,View):
+class DoctorAppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["appoint.change_appointment", "appoint.delete_appointment"]
+
     def get(self, request, current_date, appointment_time):
         app = Appointment.objects.get(appointment_date=current_date, doctor=request.user.doctor, appointment_time=appointment_time)
         app_patient = Patient.objects.get(pk=app.patient.id)
@@ -496,14 +504,16 @@ class DoctorAppointmentEditView(LoginRequiredMixin,View):
             'form': form,
             'appointment_time': appointment_time
         }
-
         if form.is_valid():
             try:
                 with transaction.atomic():
                     app = form.save(commit=False)
                     appointment_time = form.cleaned_data["appointment_time"]
+                    appointment_date = form.cleaned_data["appointment_date"]
+                    appoint_time_check = doc_appoint(doc, appointment_date)
+                    print(f"appoint_time_check = {appoint_time_check}")
 
-                    if appointment_time in appoint_time:
+                    if appointment_time in appoint_time_check:
                         form.add_error('appointment_time', 'มีนัดแล้วในเวลานี้ กรุณาเลือกเวลาอื่น')
                         return render(request, 'doc_appointment_edit.html', context)
                     else:

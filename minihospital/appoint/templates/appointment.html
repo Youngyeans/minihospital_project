@@ -101,16 +101,13 @@
 
             <script>
                 function sendLink() {
-                    // รับค่าจากฟิลด์ startDate
                     const input = document.getElementById('startDate').value;
                     
-                    // ตรวจสอบว่า input มีค่า
                     if (!input) {
                         alert("กรุณากรอกวันที่ก่อนส่งลิงค์");
                         return;
                     }
                     
-                    // แยกวันที่จากรูปแบบ dd/mm/yyyy
                     const parts = input.split('/');
                     if (parts.length !== 3) {
                         alert("รูปแบบวันที่ไม่ถูกต้อง กรุณากรอกวันที่ในรูปแบบ dd/mm/yyyy");
@@ -120,18 +117,14 @@
                     const day = parts[0];
                     const month = parts[1];
                     const year = parts[2];
-            
-                    // แปลงวันที่เป็นรูปแบบ Y-m-d
+        
                     const formattedDate = `${year}-${month}-${day}`;
                     
-                    // สร้าง URL ใหม่ (คุณสามารถกำหนดรูปแบบ URL ได้ตามที่ต้องการ)
-                    const doctorId = "{{ doc.id }}";  // รับค่า doctor.id จาก Django หรือจะใช้ค่าอื่นที่คุณต้องการ
-                    const newUrl = `/hopelife/doctor/${doctorId}/appointment/${formattedDate}/`;  // เปลี่ยน URL ตามที่คุณต้องการ
+                    const doctorId = "{{ doc.id }}"; 
+                    const newUrl = `/hopelife/doctor/${doctorId}/appointment/${formattedDate}/`; 
             
-                    // ตรวจสอบว่า URL ถูกต้องหรือไม่
                     console.log("New URL:", newUrl);
                     
-                    // เปลี่ยนหน้าไปยัง URL ใหม่
                     window.location.href = newUrl;
                 }
             </script>
@@ -181,35 +174,26 @@
             
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                // เช็คว่าฟิลด์ appointment_time มีค่าอยู่หรือไม่
                 const appointmentTime = document.querySelector('input[name="appointment_time"]').value;
 
                 if (appointmentTime) {
-                    // ถ้ามีค่า ให้หา slot ที่ data-start ตรงกับค่าใน appointment_time
                     document.querySelectorAll('.time-slot').forEach(slot => {
                         if (slot.getAttribute('data-start') === appointmentTime) {
-                            slot.classList.add('bg-blue-200');  // เปลี่ยนสีเป็นสีฟ้า
+                            slot.classList.add('bg-blue-200'); 
                         }
                     });
                 }
 
-                // สำหรับ event click ของช่องเวลา
                 document.querySelectorAll('.time-slot').forEach(slot => {
                     slot.addEventListener('click', function() {
-                        // ลบคลาสที่ active ออกจากช่องเวลาอื่น ๆ
                         document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('bg-blue-200'));
 
-                        // เพิ่มคลาส active ให้กับช่องเวลาที่ถูกคลิก
                         this.classList.add('bg-blue-200');
-
-                        // เก็บค่าเวลาที่เลือก
                         const selectedTime = this.getAttribute('data-start');
 
-                        // กำหนดค่าให้กับ input hidden ที่จะส่งไปกับ form
                         document.querySelector('input[name="appointment_time"]').value = selectedTime;
                         document.getElementById('validation_time').innerText = "เวลานัดหมาย : " + selectedTime;
 
-                        // แสดงผลเวลาเพื่อทดสอบ (optional)
                         console.log(`Selected appointment time: ${selectedTime}`);
                     });
                 });
@@ -244,7 +228,7 @@
 
             <button id="validate" class="hover:from-[#15cdcb] hover:to-[#15cdcb] bg-gradient-to-r from-[#5280e2] to-[#15cdcb] rounded-[50px] text-center text-white text-xl font-medium w-[30%] py-4">จองคิวพบแพทย์</button>
             
-            <!-- Pop-up Container -->
+            <!-- หน้า ยืนยัน-->
             <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                 <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
                     <div class="text-start text-[#3d5279] text-[32px] font-semibold">ยืนยันการนัดหมาย</div>
@@ -273,7 +257,7 @@
                         </button>
                     </div>
 
-                    <!-- ปุ่มปิด pop-up -->
+                    
                     <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
                 </div>
             </div>

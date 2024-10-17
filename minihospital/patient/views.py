@@ -6,10 +6,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
 from patient.forms import PatientEditProfileForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
-class ProfileView(LoginRequiredMixin, View):
+class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = 'authen:login'
+    permission_required = ["authen.view_patient"]
     def get(self, request, pk):
         # ดึงข้อมูล User ที่เชื่อมโยงกับผู้ใช้ปัจจุบัน
         user = User.objects.get(pk=pk)  # ค้นหา User ตาม pk ที่ส่งมา
@@ -26,8 +28,9 @@ class ProfileView(LoginRequiredMixin, View):
         user = User.objects.get(pk=pk)
         return redirect('patient:profile-edit', pk=user.pk)
     
-class ProfileEditView(LoginRequiredMixin, View):
+class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = 'authen:login'
+    permission_required = ["authen.change_patient"]
 
     def get(self, request, pk):
         user = User.objects.get(pk=pk)

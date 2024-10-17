@@ -9,6 +9,7 @@ from .forms import AppointmentEditForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 def doc_appoint(doc, appointment_date):
     appointments = Appointment.objects.filter(doctor=doc, appointment_date=appointment_date)
@@ -27,7 +28,10 @@ def patient_appoint(patient, appointment_date):
     return appoint_time
 
 
-class TreatmentListView(View):
+class TreatmentListView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["treat.view_treatment"]
+
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
         patient = Patient.objects.get(user=user)
@@ -49,7 +53,9 @@ class TreatmentListView(View):
 
         return render(request, 'treatment-list.html', context)
 
-class TreatmentResultView(View):
+class TreatmentResultView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["treat.view_treatment"]
 
     def get(self, request, pk):
         # user = User.objects.get(pk=pk)
@@ -68,7 +74,9 @@ class TreatmentResultView(View):
 
         return render(request, 'treatment-result.html', context)
     
-class AppointmentEditView(View):
+class AppointmentEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'authen:login'
+    permission_required = ["appoint.change_appointment", "appoint.delete_appointment"]
 
     def get(self, request, user_id, app_id):
         user = User.objects.get(pk=user_id)
@@ -137,7 +145,7 @@ class AppointmentEditView(View):
 
         return render(request, 'appointment_edit.html', context)
     
-    def delete(self, app_id):
+    def delete(self, request, user_id, app_id):
         try:
             app = Appointment.objects.get(pk=app_id)
             app.delete()
