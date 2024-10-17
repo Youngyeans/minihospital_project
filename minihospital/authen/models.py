@@ -68,7 +68,7 @@ class Patient(models.Model):
     address = models.TextField()
     allergy = models.TextField(blank=True, null=True)
     registrationDate = models.DateField(auto_now_add=True)
-    patient_image = models.ImageField(upload_to='images/patient/', blank=True, null=True)
+    patient_image = models.ImageField(upload_to='images/patient/', blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):

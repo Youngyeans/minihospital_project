@@ -3,34 +3,51 @@ from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Patient
-from .forms import PatientRegistrationForm
+from .forms import PatientRegistrationForm, CustomAuthenticationForm
 from django.contrib import messages
 from datetime import datetime
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, login, authenticate
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.contrib.auth.models import User, Group
+import json
+from django.contrib.auth.forms import AuthenticationForm
 
 class LoginView(View):
     def get(self, request):
-        # form = PatientRegistrationForm()
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
+
         return render(request, 'login.html', {"form": form})
 
     def post(self, request):
-        form = AuthenticationForm(data=request.POST)
+        form = CustomAuthenticationForm()
         current = datetime.now()
         current_date = current.strftime('%Y-%m-%d')
-        if form.is_valid():
-            user = form.get_user() 
-            login(request,user)
+        
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        
+        if user:
+            login(request, user)
+
+            # Debug: แสดงสิทธิ์ทั้งหมดที่ผู้ใช้มี
+            user_permissions = user.get_all_permissions()
+            print(f"User {user.username} permissions: {user_permissions}")
+            
+            # Debug: ตรวจสอบว่าผู้ใช้มีสิทธิ์บางอย่างหรือไม่
+            if user.has_perm('patient.view_patient'):
+                print("User has permission to view patients.")
+            else:
+                print("User does NOT have permission to view patients.")
+                
             if  hasattr(user, 'doctor'):
                 return redirect('appoint:doc_appointment', current_date=current_date)
             else:
                 return redirect('main:home')
 
-        return render(request,'login.html', {"form":form})
+        messages.error(request, 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!')
+        return render(request, 'login.html', {"form": form})
+
 
 class LogoutView(View):
     def get(self, request):
@@ -40,19 +57,21 @@ class LogoutView(View):
 class RegisterView(View):
     def get(self, request):
         referrer = request.META.get('HTTP_REFERER')
-        if referrer:
-            if "validation" in referrer:
-                registration_data_json = request.session.get('registration_data', {})
-                registration_data = json.loads(registration_data_json)
-                form = PatientRegistrationForm(initial=registration_data) 
-            else:
-                form = PatientRegistrationForm()
-            return render(request, 'register.html', {'form': form})
+
+        if referrer and "validation" in referrer:
+            # ดึงข้อมูลจากเซสชันพร้อมแปลงกลับมาเป้น python objects
+            registration_data_json = request.session.get('registration_data', {})
+            registration_data = json.loads(registration_data_json)
+            form = PatientRegistrationForm(initial=registration_data)
+        else:
+            form = PatientRegistrationForm()
+
+        return render(request, 'register.html', {'form': form})
 
     def post(self, request):
         form = PatientRegistrationForm(request.POST, request.FILES)
+        
         if form.is_valid():
-            # Prepare data without saving to the database yet
             context = {
                 'prefix': form.cleaned_data['prefix'],
                 'first_name': form.cleaned_data['first_name'],
@@ -63,73 +82,56 @@ class RegisterView(View):
                 'confirmpassword': form.cleaned_data['confirmpassword'],
                 'phone': form.cleaned_data['phone'],
                 'gender': form.cleaned_data['gender'],
-                'DOB': form.cleaned_data['DOB'].strftime('%Y-%m-%d'),  # Convert date to string
-                'height': str(form.cleaned_data['height']),  # Convert Decimal to string
-                'weight': str(form.cleaned_data['weight']),  # Convert Decimal to string
+                'DOB': form.cleaned_data['DOB'].strftime('%Y-%m-%d'),
+                'height': str(form.cleaned_data['height']),
+                'weight': str(form.cleaned_data['weight']),
                 'blood_group': form.cleaned_data['blood_group'],
                 'allergy': form.cleaned_data['allergy'],
                 'address': form.cleaned_data['address'],
-                'patient_image': request.FILES.get('patient_image', None),  # Include image if uploaded
             }
-            # Convert to JSON
             json_data = json.dumps(context)
-            request.session['registration_data'] = json_data  # Save JSON string to session
+            request.session['registration_data'] = json_data
+
             return redirect('authen:validation')
-        print(form.errors)
-        return render(request, 'register.html', {'form': form})
+        
+        context = {
+                'form': form,
+            }
+        
+        return render(request, 'register.html', context)
 
 class ValidationView(View):
     def get(self, request):
-        # Retrieve the JSON data from the session
-        registration_data_json = request.session.get('registration_data', None)
+        registration_data_json = request.session.get('registration_data', {})
         if registration_data_json is None:
-            messages.error(request, "No registration data found.")
-            return redirect('authen:register')  # Redirect back to the register page if no data found
+            messages.error(request, "ไม่พบข้อมูลการลงทะเบียน")
+            return redirect('authen:register')
 
-        # Convert JSON string back to Python dictionary
         registration_data = json.loads(registration_data_json)
+  
         return render(request, 'validation.html', registration_data)
 
     def post(self, request):
-        # form = AuthenticationForm()
-        print("Post method triggered")  # Debugging line
         if 'save' in request.POST:
-            print("Save button clicked")  # Debugging line
-
-            # Retrieve the JSON data from the session
             registration_data_json = request.session.get('registration_data', None)
             if registration_data_json is None:
-                messages.error(request, "No registration data found.")
+                messages.error(request, "ไม่พบข้อมูลการลงทะเบียน")
                 return redirect('authen:register')
 
-            registration_data = json.loads(registration_data_json)  # Convert JSON back to dictionary
-            
-            # Create a new Patient object and save to the database
+            registration_data = json.loads(registration_data_json)
+
+            #สร้างบัญชีและ User 
             try:
                 with transaction.atomic():
-                    # Create the User object
                     user = User.objects.create_user(
                         username=registration_data['personalID'],
-                        password=registration_data['password'],  # You may replace this with the actual password
+                        password=registration_data['password'],
                         first_name=registration_data['first_name'],
                         last_name=registration_data['last_name'],
                     )
 
-                    user = authenticate(
-                            request,
-                            username= registration_data['personalID'],
-                            password=registration_data['password']
-                        )
-
-                    patient_group = Group.objects.get(name='patient')
-                    user.groups.add(patient_group)
-
-                    # Create the Patient object and link it to the User
                     patient = Patient(
                         prefix=registration_data['prefix'],
-                        # first_name=registration_data['first_name'],
-                        # last_name=registration_data['last_name'],
-                        # personalID=registration_data['personalID'],
                         nationality=registration_data['nationality'],
                         phone=registration_data['phone'],
                         gender=registration_data['gender'],
@@ -139,22 +141,21 @@ class ValidationView(View):
                         blood_group=registration_data['blood_group'],
                         allergy=registration_data['allergy'],
                         address=registration_data['address'],
-                        patient_image=registration_data.get('patient_image'),
-                        user=user  # Linking the user to the patient
+                        user=user
                     )
-                    
-                    patient.save()  # Save the patient data to the database
-                    messages.success(request, "Registration successful.")
 
-            except Exception as e:
-                print(f"Error saving patient: {e}")  # Debugging line
-                messages.error(request, "Failed to save patient data.")
+                    patient_group = Group.objects.get(pk=2)
+                    patient_group.user_set.add(user)
+
+                    patient.save()
+                    messages.success(request, "ลงทะเบียนสำเร็จ !")
+
+            except Exception:
+                messages.error(request, "ลงทะเบียนไม่สำเร็จ !")
                 return redirect('authen:register')
 
-            del request.session['registration_data']  # Clear session data after saving
-            
+            del request.session['registration_data']
             return redirect('authen:login')
 
         elif 'cancel' in request.POST:
-            print("Cancel button clicked")  # Debugging line
             return redirect('authen:register')

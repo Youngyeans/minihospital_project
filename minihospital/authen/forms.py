@@ -3,6 +3,27 @@
 from django import forms
 from .models import Patient
 from django.forms.widgets import *
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from datetime import datetime
+
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'รหัสบัตรประชาชน'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'id': 'password',
+            'name': 'password',
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'รหัสผ่าน'
+        })
+    )
 
 class PatientRegistrationForm(forms.ModelForm):
 
@@ -61,16 +82,46 @@ class PatientRegistrationForm(forms.ModelForm):
     nationality = forms.ChoiceField(choices=NATIONALITY_CHOICES, required=True)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=True)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES, required=True)
-    first_name = forms.CharField(max_length=225)
-    last_name = forms.CharField(max_length=225)
-    personalID = forms.CharField(max_length=13)
-    password = forms.CharField(max_length=32)
-    confirmpassword = forms.CharField(max_length=32)
 
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
-    personalID = forms.CharField(max_length=13)
-    password = forms.CharField(max_length=32)
+    first_name = forms.CharField(
+        max_length=255,
+        widget=TextInput(attrs={
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'ชื่อ',
+        })
+    )
+    last_name = forms.CharField(
+        max_length=255,
+        widget=TextInput(attrs={
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'นามสกุล',
+        })
+    )
+    personalID = forms.CharField(
+        max_length=13,
+        widget=TextInput(attrs={
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'รหัสบัตรประชาชน',
+        })
+    )
+    password = forms.CharField(
+        max_length=32,
+        widget=PasswordInput(attrs={
+            'id': 'password',
+            'name': 'password',
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'รหัสผ่าน',
+        })
+    )
+    confirmpassword =  forms.CharField(
+        max_length=32,
+        widget=PasswordInput(attrs={
+            'id': 'password_confirm',
+            'name': 'password_confirm',
+            'class': 'bg-transparent border-none outline-none',
+            'placeholder': 'ยืนยันรหัสผ่าน',
+        })
+    )
 
     class Meta:
         model = Patient
@@ -94,38 +145,16 @@ class PatientRegistrationForm(forms.ModelForm):
         ]
 
         widgets = {
-            "password": PasswordInput(attrs={
-                'id': 'password',
-                'name': 'password',
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'รหัสผ่าน',
-            }),
-            "confirmpassword": PasswordInput(attrs={
-                'id': 'password_confirm',
-                'name': 'password_confirm',
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'ยืนยันรหัสผ่าน'
-            }),
             "prefix": Select(attrs={
                 'class': 'bg-transparent border-none outline-none'
             }),
-            "first_name": TextInput(attrs={
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'ชื่อ'
-            }),
-            "last_name": TextInput(attrs={
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'นามสกุล'
-            }),
+
             "DOB": DateInput(attrs={
                 "type": "date",
                 'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'วันเกิด'  # Optional placeholder
+                'placeholder': 'วันเกิด'
             }),
-            "personalID": TextInput(attrs={
-                'class': 'bg-transparent border-none outline-none',
-                'placeholder': 'รหัสบัตรประชาชน'
-            }),
+
             "phone": TextInput(attrs={
                 'class': 'bg-transparent border-none outline-none',
                 'placeholder': 'เบอร์โทร'
@@ -155,44 +184,53 @@ class PatientRegistrationForm(forms.ModelForm):
                 'placeholder': 'ที่อยู่'
             }),
         }
+
+    def clean_personalID(self):
+        personalID = self.cleaned_data.get('personalID')
         
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['patient_image'].widget.attrs.update({
-            'style': 'opacity: 0; position: absolute; top: 25px; left:-8px; cursor: pointer; z-index: 10;',
-            'onchange': 'onchange="previewImage(event)'  # Replace with your actual function
-        })
+        if User.objects.filter(username=personalID).exists():
+            raise forms.ValidationError("หมายเลขบัตรประชาชนนี้ตรงกับชื่อผู้ใช้ในระบบ กรุณากรอกหมายเลขใหม่.")
+        
+        return personalID
+    
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+
+        if Patient.objects.filter(phone=phone).exists():
+            raise forms.ValidationError('หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว กรุณากรอกหมายเลขใหม่')
+        
+        return phone
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirmpassword')
+        prefix = cleaned_data.get('prefix')
+        gender = cleaned_data.get('gender')
+        nationality = cleaned_data.get('nationality')
+        dob = cleaned_data.get('DOB')
+        phone = cleaned_data.get('phone')
+        errors = []
+
+        # ตรวจสอบเงื่อนไขที่กำหนด
+        if prefix in ['น.ส.', 'นาง', 'ด.ญ.'] and gender != 'หญิง':
+            errors.append("สามารถเลือกได้แค่เพศหญิงเท่านั้น !")
+        
+        if prefix in ['นาย', 'ด.ช.'] and gender != 'ชาย':
+            errors.append("สามารถเลือกได้แค่เพศชายเท่านั้น !")
 
         if password != confirm_password:
-            raise forms.ValidationError("Password and Confirm Password do not match!")
+            errors.append("รหัสผ่านไม่ตรงกัน !")
         
+        if len(password) < 8 and len(confirm_password) < 8:
+            errors.append('รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
+
+        if dob > datetime.now().date():
+            errors.append("กรุณากรอกวันเกิดใหม่")
+
+        # หากมีข้อผิดพลาด ให้ยกเลิกการส่งฟอร์ม
+        if errors:
+            raise forms.ValidationError(errors)
+
         return cleaned_data
     
-
-
-# class PatientLoginForm(forms.ModelForm):
-
-#     class Meta:
-#         model = Patient
-#         fields = [
-#             'personalID',
-#             'password',
-#         ]
-
-#         widgets = {
-#             "password": PasswordInput(attrs={
-#                 'id': 'password',
-#                 'name': 'password',
-#                 'class': 'bg-transparent border-none outline-none',
-#                 'placeholder': 'รหัสผ่าน'
-#             }),
-#             "personalID": TextInput(attrs={
-#                 'class': 'bg-transparent border-none outline-none',
-#                 'placeholder': 'รหัสบัตรประชาชน'
-#             })
-#         }

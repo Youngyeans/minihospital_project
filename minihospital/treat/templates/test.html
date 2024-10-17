@@ -1,0 +1,388 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    profile
+{% endblock %}
+{% block head %}
+<style>
+    body{
+        font-family: "Kanit", sans-serif;
+        font-size: 16px;
+    }
+    
+    .link{
+        transition: transform 0.3s ease, color 0.3s ease;
+        color: #494949;
+    }
+
+    .link:hover{
+        color: #15CDCB;
+        transform: scale(1.05);
+    }
+
+    .profile{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: transform 0.3s ease;
+    }
+
+    .profile:hover{
+        transform: scale(0.95);
+    }
+
+    .personal{
+        font-size: 48px;
+        color: #3E5279;
+    }
+
+    .boxboxno{
+        box-shadow: 0px 0px 30.2px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 20px;
+    }
+
+    .boxbox{
+        box-shadow: 0px 0px 30.2px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 20px;
+    }
+
+    .boxbox:hover{
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        transform: scale(0.98);
+        cursor: pointer;
+    }
+
+    .edit{
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .edit:hover{
+        transform: scale(0.95);
+    }
+
+    .name{
+        color: #909090;
+    }
+
+    .name2{
+        color: #494949;
+    }
+
+    .name3{
+        color: #15CDCB;
+    }
+
+    .notyet{
+        background-color: #E8374F;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .already{
+        background-color: #6ED655;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .cancel {
+        background-color: white; /* Inner background color */
+        border-radius: 50px;
+        border: 1px solid var(--Linear, #5280E2);
+        background: var(--Linear, linear-gradient(90deg, #5280E2 0%, #15CDCB 100%));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .cancel:hover {
+        /* transform: scale(0.98); */
+        background: linear-gradient(to right, #5280E2, #15CDCB);
+        color: white; /* Set text color to white on hover */
+        -webkit-background-clip: unset; /* Remove background clip on hover */
+        -webkit-text-fill-color: unset; /* Remove text fill color on hover */
+        /* font-weight: 400; */
+    }
+
+    .close{
+        top: 270px;
+        right: 400px;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .close:hover {
+        transform: scale(0.95);
+    }
+
+    .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed position */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        .modal-content {
+            background-color: white; /* White background */
+            padding: 20px; /* Padding */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Shadow */
+            width: 400px; /* Set width */
+            max-width: 90%; /* Responsive */
+            position: relative; /* Position relative for the close button */
+        }
+
+        .close {
+            color: #aaa; /* Close button color */
+            float: right; /* Positioning */
+            font-size: 28px; /* Font size */
+            font-weight: bold; /* Font weight */
+            cursor: pointer; /* Pointer cursor */
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black; /* Hover color */
+        }
+
+    .bin:hover{
+        transform: scale(0.95);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto w-full px-36 pt-12 pb-20 fade-in">
+    <h1 class="personal font-medium mb-14">ประวัติการรักษา</h1>
+
+    <!-- กล่อง boxbox ที่ 1 -->
+    <div class="boxboxno bg-white p-12 fade-in flex items-center mb-10 relative">
+        
+        <div class="flex items-center justify-between w-full">
+            <div class="flex-shrink-0">
+                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+            </div>
+            <div class="flex-grow mx-4">
+                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 4
+                    <span class="ml-4 notyet text-white px-6 py-1 rounded-full">
+                        ยังไม่ได้รับการรักษา
+                    </span>
+                </h2>
+                <p class="name2 mb-1">วันที่นัดหมาย : xx/xx/xxxx</p>
+                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
+                <p class="name3 font-medium">นพ. ปรัชญา มณีปัญญา</p>
+            </div>
+            <div>
+                <img src="{% static 'image/delete.png'%}" class="w-10 h-10 mr-5 bin cursor-pointer" alt="">
+            </div>
+            <div class="flex-shrink-0 space-y-2">
+                <button class="font-medium text-xl w-full cancel px-10 py-2 rounded-full focus:outline-none" id="editAppointmentBtn">
+                    แก้ไขนัดหมาย
+                </button>
+            </div>
+
+            <!-- Modal Structure -->
+            <div id="editAppointmentModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeModal">&times;</span>
+                    <h2>แก้ไขนัดหมาย</h2>
+                    <p>นี่คือที่ที่คุณสามารถแก้ไขนัดหมายของคุณ</p>
+                    <!-- You can add a form or additional content here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- กล่อง boxbox ที่ 2 -->
+    <div class="boxbox bg-white p-12 fade-in flex items-center mb-10 relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
+        <div class="flex items-center justify-between w-full">
+            <div class="flex-shrink-0">
+                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+            </div>
+            <div class="flex-grow mx-4">
+                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 3
+                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
+                        ได้รับการรักษาแล้ว
+                    </span>
+                </h2>
+                <p class="name2 mb-1">วันที่นัดหมาย : 05/07/2024</p>
+                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
+                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- กล่อง boxbox ที่ 3 -->
+    <div class="boxbox bg-white p-12 fade-in flex items-center mb-10 relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
+        <div class="flex items-center justify-between w-full">
+            <div class="flex-shrink-0">
+                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+            </div>
+            <div class="flex-grow mx-4">
+                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 2
+                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
+                        ได้รับการรักษาแล้ว
+                    </span>
+                </h2>
+                <p class="name2 mb-1">วันที่นัดหมาย : 17/04/2024</p>
+                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
+                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- กล่อง boxbox ที่ 4 -->
+    <div class="boxbox bg-white p-12 fade-in flex items-center relative" onclick="window.location.href='{% url 'treat:treatment-result' %}';">>
+        <div class="flex items-center justify-between w-full">
+            <div class="flex-shrink-0">
+                <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+            </div>
+            <div class="flex-grow mx-4">
+                <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ 1
+                    <span class="ml-4 already text-white px-6 py-1 rounded-full">
+                        ได้รับการรักษาแล้ว
+                    </span>
+                </h2>
+                <p class="name2 mb-1">วันที่นัดหมาย : 21/08/2023</p>
+                <p class="name2 mb-2">ผลวินิจฉัย : -</p>
+                <p class="name3 font-medium">นพ. ธีร จารุวณิช</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // เลือกทุกองค์ประกอบที่คุณต้องการให้เฟด
+            const elements = document.querySelectorAll('.fade-in');
+
+            // เพิ่มคลาสเพื่อทำให้เฟด
+            setTimeout(() => {
+                elements.forEach(element => {
+                    element.classList.add('fade-in-active');
+                });
+            }, 100); // รอ 100ms ก่อนเริ่มเฟด
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('editAppointmentModal');
+            const btn = document.getElementById('editAppointmentBtn');
+            const span = document.getElementsByClassName('close')[0];
+
+            // When the user clicks the button, open the modal
+            btn.onclick = function () {
+                modal.classList.remove('hidden');
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.classList.add('hidden');
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+
+
+
+INSERT INTO appoint_appointment (appointment_date, appointment_time, patient_id, doctor_id, symptom, start_sympdate, temperature, note) VALUES
+('2024-10-15', '10:00:00', 1, 2, 'Fever and fatigue', '2024-10-10', 37.5, 'Follow-up required.'),
+('2024-10-16', '14:00:00', 2, 3, 'Knee pain', '2024-10-12', 36.8, NULL),
+('2024-10-17', '09:30:00', 2, 4, 'Skin rash', '2024-10-14', 38.0, 'Referred to dermatologist.');
+
+
+INSERT INTO public.treat_treatmenttype (name, description, cost)
+VALUES 
+    ('Physiotherapy', 'Therapeutic treatment to improve physical function.', 150.00),
+    ('Acupuncture', 'Traditional Chinese medicine technique that involves inserting needles.', 120.00),
+    ('Chiropractic', 'Manual therapy to treat musculoskeletal issues.', 100.00);
+
+
+INSERT INTO public.treat_treatment (treatment_type_id, details, diagnose, appointment_id)
+VALUES (1, 'Administered medication and advised rest.', 'Mild viral infection.', 1);
+
+
+
+
+ <!-- {% else %} -->
+            <!-- กล่อง boxbox ที่ แสดงว่ายังไม่ได้รับการรักษา -->
+            <!-- <div class="boxboxno bg-white p-12 fade-in flex items-center mb-10 relative">
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'image/check-up.png'%}" alt="check-up" class="w-24 h-24 fade-in">
+                    </div>
+                    <div class="flex-grow mx-4">
+                        <h2 class="name2 font-medium mb-1 flex items-center">หมายเลขนัดหมายที่ {{ appointment.id }}
+                            <span class="ml-4 notyet text-white px-6 py-1 rounded-full">
+                                ยังไม่ได้รับการรักษา
+                            </span>
+                        </h2>
+                        <p class="name2 mb-1">วันที่นัดหมาย : {{ appointment.date }}</p>
+                        <p class="name2 mb-2">ผลวินิจฉัย : {{ treatment.diagnose }}</p>
+                        <p class="name3 font-medium">{{ appointment.doctor.name }}</p>
+                    </div>
+                    <div>
+                        <img src="{% static 'image/delete.png'%}" class="w-10 h-10 mr-5 bin cursor-pointer" alt="">
+                    </div>
+                    <div class="flex-shrink-0 space-y-2">
+                        <button class="font-medium text-xl w-full cancel px-10 py-2 rounded-full focus:outline-none" id="editAppointmentBtn">
+                            แก้ไขนัดหมาย
+                        </button>
+                    </div>
+                </div>
+            </div> -->
+        <!-- {% endif %}
+    {% endfor %}
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // เลือกทุกองค์ประกอบที่คุณต้องการให้เฟด
+            const elements = document.querySelectorAll('.fade-in');
+
+            // เพิ่มคลาสเพื่อทำให้เฟด
+            setTimeout(() => {
+                elements.forEach(element => {
+                    element.classList.add('fade-in-active');
+                });
+            }, 100); // รอ 100ms ก่อนเริ่มเฟด
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('editAppointmentModal');
+            const btn = document.getElementById('editAppointmentBtn');
+            const span = document.getElementsByClassName('close')[0];
+
+            // When the user clicks the button, open the modal
+            btn.onclick = function () {
+                modal.classList.remove('hidden');
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.classList.add('hidden');
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+{% endblock %}

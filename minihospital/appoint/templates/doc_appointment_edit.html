@@ -72,7 +72,7 @@
                 
                 <div class="flex justify-between items-center">
                     
-                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}">
+                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="hidden">
                     
                     <div id="dateGrid" class="grid grid-cols-7 grid-cols-1 gap-[26px] m-16">
                         {% for i in week %}
@@ -83,7 +83,7 @@
                         {% endfor %}
                     </div>
                     
-                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="rotate-180">
+                    <img width="50" height="50" src="{% static 'image\left-arrow (2).png' %}" class="hidden rotate-180">
                     
                 </div>
                 
@@ -207,7 +207,7 @@
                         </div>
                         <div class="flex space-x-12 mt-10 items-center">
                             <div class="w-[134px] h-[134px] bg-[#e1f6f5] rounded-full">
-                                <img class="rounded-full" width="134" height="134" src="{{ doc.doctor_image.url }}" />
+                                <img class="rounded-full" width="134" height="134" src="{{ app_patient.patient_image.url }}" />
                             </div>
 
                             <div>
@@ -233,7 +233,6 @@
                             <button type="button" onclick="deleteAppointment('{{current_date}}', '{{appointment_time}}')" class="text-xl p-3 px-12 font-medium hover:bg-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-transparent border border-[#15CDCB] flex justify-center rounded-full items-center]">
                                ยกเลิกนัดหมาย
                             </button>
-                            <div>{{current_date}}</div>
 
                             <script>
                                 function deleteAppointment(current_date, appointment_time) {

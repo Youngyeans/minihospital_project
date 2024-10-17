@@ -85,8 +85,8 @@ class AppointmentForm(ModelForm):
         })
     )
 
-    start_sympDate = forms.DateField(
-        input_formats=['%d/%m/%Y'],  # รองรับรูปแบบ dd/mm/yyyy
+    start_sympdate = forms.DateField(
+        input_formats=['%d/%m/%Y'], 
         widget=TextInput(attrs={
             'id': 'sympDate',
             'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
@@ -101,7 +101,7 @@ class AppointmentForm(ModelForm):
             "appointment_date",
             "appointment_time",
             "symptom",
-            "start_sympDate",
+            "start_sympdate",
             "temperature",
         ]
         widgets = {
@@ -120,16 +120,11 @@ class AppointmentForm(ModelForm):
             })
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # ถ้ามีการส่งค่าจาก initial ให้ใช้เป็นค่าตั้งต้น
-    #     self.fields['appointment_date'].widget.attrs['value'] = self.initial.get('appointment_date', '')
-
     def clean(self):
         cleaned_data = super().clean()
         appointment_date = cleaned_data.get('appointment_date')
         appointment_time = cleaned_data.get('appointment_time')
-        start_sympDate = cleaned_data.get('start_sympDate')
+        start_sympdate = cleaned_data.get('start_sympdate')
         temperature = float(cleaned_data.get('temperature'))
 
         if appointment_date and appointment_time:
@@ -138,10 +133,10 @@ class AppointmentForm(ModelForm):
             if appointment_datetime < datetime.now():
                 raise forms.ValidationError('วันและเวลาที่จองต้องไม่เป็นอดีต')
             
-        if not start_sympDate:
+        if not start_sympdate:
             raise forms.ValidationError('กรุณากรอกวันที่เริ่มมีอาการ')
         else:
-            if start_sympDate > appointment_date:
+            if start_sympdate > appointment_date:
                 raise forms.ValidationError('วันที่เริ่มมีอาการควรเป็นอดีต')
         
         if temperature > 37.2 or temperature < 36.1:

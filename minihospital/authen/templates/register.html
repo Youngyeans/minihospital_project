@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container w-full h-[1450px] mx-auto bg-gradient-to-b from-[#5280E2] to-[#15CDCB] flex">
+    <div class="container w-full h-[1600px] mx-auto bg-gradient-to-b from-[#5280E2] to-[#15CDCB] flex">
         <div class="bgwhite bg-white w-[1200px] h[1450px] ml-auto relative flex justify-center">
 
             <div class="flex flex-col mt-[100px] items-center absolute">
@@ -40,7 +40,7 @@
                         <p class="bg-[#15CDCB] text-white rounded-full w-12 h-12 flex ml-3 items-center justify-center">1</p>
                         <p class="text-[#494949]">รายละเอียด</p>
                     </div>
-                    <div class="w-28 h-[2px] bg-[#C8C8C8] mx-3"></div> <!-- Horizontal line -->
+                    <div class="w-28 h-[2px] bg-[#C8C8C8] mx-3"></div>
                     <div>
                         <p class="bg-[#EAEAEA] text-[#C8C8C8] rounded-full w-12 h-12 flex ml-3 items-center justify-center">2</p>
                         <p class="text-[#494949]">ยืนยันข้อมูล</p>
@@ -55,23 +55,6 @@
                             <div class="bg-[#EAEAEA] rounded-[50px] flex items-center pl-10 w-[450px] h-[65px] border-none outline-none text-[#9F9EA2]">
                                 {{ form.prefix }}
                             </div>
-
-                            <div class="">
-                                <div class="relative w-fit mr-10 -mt-9">
-                                    <img src="{% if form.patient_image.value %}{{ form.patient_image.value.url }}{% else %}{% static 'image/profile-user.png' %}{% endif %}" 
-                                         alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" id="profilePicture">
-                                    
-                                        {{ form.patient_image }}
-                            
-                                    <div class="camera absolute top-[22px] right-[22px] p-2 bg-gray-500 bg-opacity-50 rounded-full cursor-pointer" onclick="document.getElementById('uploadPicture').click();">
-                                        <img src="{% static 'image/camera.png' %}" alt="Camera Icon" class="w-5">
-                                    </div>
-                            
-                                    <input type="file" accept="image/*" id="uploadPicture" onchange="previewImage(event)" class="absolute opacity-0 cursor-pointer">
-                                </div>
-                                <p class="text-[#C8C8C8] ml-1">เพิ่มรูปภาพ</p>
-                            </div>
-
                         </div>
 
                         <div class="grid grid-cols-2 space-x-5">
@@ -83,10 +66,12 @@
                             </div>
                         </div>
 
+                        {{ form.personalID.errors }}
                         <div class="bg-[#EAEAEA] rounded-[50px] pl-10 flex items-center w-full h-[65px] border-none outline-none text-[#494949]">
                             {{ form.personalID }}
                         </div>
 
+                        {{ form.password.errors }}
                         <div class="relative bg-[#EAEAEA] rounded-[50px] pl-10 flex items-center w-full h-[65px] border-none outline-none text-[#494949]">
                             {{ form.password }}
                             <img src="{% static 'image/view.png' %}" alt="Show Password" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-8 cursor-pointer" id="togglePassword" onclick="togglePasswordVisibility()">
@@ -97,6 +82,7 @@
                             <img src="{% static 'image/view.png' %}" alt="Show Password" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-8 cursor-pointer" id="togglePasswordConfirm" onclick="toggleConfirmPasswordVisibility()">
                         </div>
 
+                        {{ form.phone.errors }}
                         <div class="grid grid-cols-2 space-x-5">
                             <div class="bg-[#EAEAEA] rounded-[50px] pl-10 flex items-center w-full h-[65px] border-none outline-none text-[#9F9EA2]">
                                 {{ form.nationality }}
@@ -106,17 +92,13 @@
                             </div>
                         </div>
 
+                        {{ form.DOB.errors }}
                         <div class="grid grid-cols-2 space-x-5">
                             <div class="bg-[#EAEAEA] rounded-[50px] flex items-center pl-10 w-[450px] h-[65px] border-none outline-none text-[#9F9EA2]">
                                 {{ form.gender }}
                             </div>
                             <div class="relative bg-[#EAEAEA] flex items-center rounded-[50px] pl-10 pr-10 w-full h-[65px] border-none outline-none text-[#C8C8C8] appearance-none">
                                 {{ form.DOB }}
-                                
-                                <!-- Custom Calendar Icon -->
-                                <span class="absolute right-5 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                                    <img src="{% static 'image/greycalendar.png' %}" alt="Calendar" class="w-7 h-7">
-                                </span>
                             </div>
                         </div>
 
@@ -142,7 +124,7 @@
                             {{ form.address }}
                         </div>
                         
-                        <div>
+                        <div class="flex items-center justify-center">
                             <button type="submit" class="flex items-center justify-center mt-10 text-base text-white font-normal font-['Kanit'] w-[618px] h-[65px] rounded-full bg-gradient-to-r from-[#5280e2] to-[#15cdcb] hover:from-[#15CDCB] hover:to-[#15CDCB] hover:scale-[0.98] transition-opacity transition-transform duration-500 ease-in-out">
                                 <span class="">ถัดไป</span>
                                 <svg class="w-4 h-4 ml-1 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -160,21 +142,6 @@
     </div>
 
     <script>
-        function previewImage(event) {
-            const profilePicture = document.getElementById('profilePicture');
-            const file = event.target.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    profilePicture.src = e.target.result; // Set the src of the img element to the uploaded image
-                };
-
-                reader.readAsDataURL(file); // Convert the image file to base64 URL
-            }
-        }
-
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('togglePassword');
