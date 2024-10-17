@@ -47,7 +47,6 @@ class PatientEditProfileForm(forms.ModelForm):
     class Meta:
         model = Patient
         fields = [
-            'gender',
             'nationality',
             'height',
             'weight',
@@ -62,10 +61,6 @@ class PatientEditProfileForm(forms.ModelForm):
             "phone": TextInput(attrs={
                 'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black ',
                 'placeholder': 'เบอร์โทร'
-            }),
-            "gender": Select(attrs={
-                'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black',
-                'placeholder': 'เพศ'
             }),
             "height": NumberInput(attrs={
                 'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black ',
@@ -88,5 +83,4 @@ class PatientEditProfileForm(forms.ModelForm):
                 'placeholder': 'ที่อยู่'
             }),
         }
-    
     
