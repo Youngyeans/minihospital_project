@@ -54,10 +54,6 @@ class ProfileEditView(LoginRequiredMixin, View):
                 messages.error(request, "กรุณากรอกเบอร์ใหม่")
                 return render(request, 'profile-edit.html', {'form': form, 'user': user, 'patient': patient})
 
-
-            print('Form Valid:', form.is_valid())
-            print('Form Errors:', form.errors)
-
             if form.is_valid():
                 form.save()  # Save the updated patient information
                 return redirect('patient:profile', pk=user.pk)  # Redirect to profile page after saving

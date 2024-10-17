@@ -29,12 +29,6 @@ class PatientEditProfileForm(forms.ModelForm):
         ("รัสเซีย", "รัสเซีย"),
     )
 
-    GENDER_CHOICES = (
-        ('เพศ', 'เพศ'),
-        ('ชาย', 'ชาย'),
-        ('หญิง', 'หญิง')
-    )
-
     BLOOD_GROUP_CHOICES = (
         ('กรุ๊ปเลือด', 'กรุ๊ปเลือด'),
         ("A+", "A+"),
@@ -48,13 +42,11 @@ class PatientEditProfileForm(forms.ModelForm):
     )
 
     nationality = forms.ChoiceField(choices=NATIONALITY_CHOICES)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES)
 
     class Meta:
         model = Patient
         fields = [
-            'gender',
             'nationality',
             'height',
             'weight',
@@ -69,10 +61,6 @@ class PatientEditProfileForm(forms.ModelForm):
             "phone": TextInput(attrs={
                 'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black ',
                 'placeholder': 'เบอร์โทร'
-            }),
-            "gender": Select(attrs={
-                'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black',
-                'placeholder': 'เพศ'
             }),
             "height": NumberInput(attrs={
                 'class': 'h-8 border-b-2 border-gray-300 focus:outline-none focus:border-black ',
@@ -95,5 +83,4 @@ class PatientEditProfileForm(forms.ModelForm):
                 'placeholder': 'ที่อยู่'
             }),
         }
-    
     
