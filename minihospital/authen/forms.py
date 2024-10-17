@@ -207,9 +207,7 @@ class PatientRegistrationForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirmpassword')
         prefix = cleaned_data.get('prefix')
         gender = cleaned_data.get('gender')
-        nationality = cleaned_data.get('nationality')
         dob = cleaned_data.get('DOB')
-        phone = cleaned_data.get('phone')
         errors = []
 
         # ตรวจสอบเงื่อนไขที่กำหนด

@@ -99,17 +99,4 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // เลือกทุกองค์ประกอบที่คุณต้องการให้เฟด
-            const elements = document.querySelectorAll('.fade-in');
-
-            // เพิ่มคลาสเพื่อทำให้เฟด
-            setTimeout(() => {
-                elements.forEach(element => {
-                    element.classList.add('fade-in-active');
-                });
-            }, 100); // รอ 100ms ก่อนเริ่มเฟด
-        });
-    </script>
 {% endblock %}

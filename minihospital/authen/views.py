@@ -30,15 +30,9 @@ class LoginView(View):
         if user:
             login(request, user)
 
-            # Debug: แสดงสิทธิ์ทั้งหมดที่ผู้ใช้มี
             user_permissions = user.get_all_permissions()
             print(f"User {user.username} permissions: {user_permissions}")
             
-            # Debug: ตรวจสอบว่าผู้ใช้มีสิทธิ์บางอย่างหรือไม่
-            if user.has_perm('patient.view_patient'):
-                print("User has permission to view patients.")
-            else:
-                print("User does NOT have permission to view patients.")
                 
             if  hasattr(user, 'doctor'):
                 return redirect('appoint:doc_appointment', current_date=current_date)
