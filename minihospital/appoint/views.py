@@ -151,15 +151,23 @@ class AppointTodayView(View):
 
     def get(self, request):
         department = request.GET.get('department', 'ทั้งหมด')
+        search = request.GET.get('search')
 
         current = datetime.now()
         current_time = current.time()
         current_date = current.strftime('%Y-%m-%d')
         today = current.date().strftime("%d/%m/%Y")
 
-        doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time)
         if department and department != "ทั้งหมด":
             doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time, department__name=department)
+        else:
+            doctor_list = Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time)
+
+        if search:
+            doc = Doctor.objects.filter(user__first_name=search)
+            count = doc.count()
+            if count > 0 :
+                doctor_list= Doctor.objects.filter(start_time__lte=current_time, end_time__gte=current_time,user__first_name=search)
 
         today_day = day(current.date(), "full")
         for doc in doctor_list:
@@ -169,6 +177,7 @@ class AppointTodayView(View):
         doctor_list_today = [doc for doc in doctor_list if today_day in doc.day]
         
         page_obj = paginator(request, doctor_list_today, 6)
+
 
         context ={
             'today': today,
@@ -186,10 +195,20 @@ class DoctorListView(View):
         current_date = current.strftime('%Y-%m-%d')
 
         department = request.GET.get('department', 'ทั้งหมด')
-        doctor_list = Doctor.objects.all().order_by('id')
+        search = request.GET.get('search')
+        print("search = {search}")
 
         if department and department != "ทั้งหมด":
             doctor_list = doctor_list.filter(department__name=department)
+        else:
+            doctor_list = Doctor.objects.all().order_by('id')
+
+        if search:
+            doc = Doctor.objects.filter(user__first_name=search)
+            count = doc.count()
+            if count > 0 :
+                doctor_list= Doctor.objects.filter(user__first_name=search)
+            
 
         page_obj = paginator(request, doctor_list, 6)
         
@@ -269,21 +288,16 @@ class AppointmentView(LoginRequiredMixin,View):
 
         doc_days_json = mark_safe(json.dumps(doc.day))
 
-        # try:
-        #     app = Appointment.objects.get(patient=request.user.patient, appointment_date=appointment_date)
-        # except Appointment.DoesNotExist:
-        #     app = None
-
 
         context = {
-            'doc': doc,  # ข้อมูลหมอ
-            'week': week,  # ข้อมูลสัปดาห์
-            'start': doc.start_time.strftime("%H:%M"),  # เวลาเริ่มทำงานของหมอ
-            'end': doc.end_time.strftime("%H:%M"),  # เวลาสิ้นสุดการทำงานของหมอ
-            'form': form,  # ฟอร์มนัดหมาย
-            'previous': previous,  # หน้าที่มาก่อน
-            'updated_times': updated_times,  # ช่วงเวลาที่สามารถนัดได้
-            'doc_days_json': doc_days_json,  # ส่งข้อมูล doc.day ในรูปแบบ JSON ไปยัง JavaScript
+            'doc': doc,
+            'week': week,
+            'start': doc.start_time.strftime("%H:%M"),
+            'end': doc.end_time.strftime("%H:%M"),
+            'form': form,
+            'previous': previous,
+            'updated_times': updated_times,
+            'doc_days_json': doc_days_json,
             'today_day' : today_day,
             'appointment_date_str': appointment_date_str,
             'current_date': current_date

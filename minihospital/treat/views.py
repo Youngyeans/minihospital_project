@@ -18,6 +18,15 @@ def doc_appoint(doc, appointment_date):
 
     return appoint_time
 
+def patient_appoint(patient, appointment_date):
+    appointments = Appointment.objects.filter(patient=patient, appointment_date=appointment_date)
+    appoint_time = [
+        appointment_time.strftime('%H:%M') for appointment_time in appointments.values_list('appointment_time', flat=True)
+    ]
+
+    return appoint_time
+
+
 class TreatmentListView(View):
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
@@ -84,10 +93,6 @@ class AppointmentEditView(View):
             'doc': doc,
             'form': form
         }
-        if form.is_valid():
-            form.save()
-            return redirect('appoint:treatment-list' ,pk=request.user.id)
-
         return render(request, 'appointment_edit.html', context)
     
     def post(self, request, user_id, app_id):
@@ -116,7 +121,8 @@ class AppointmentEditView(View):
                     appoint = form.save(commit=False)
                     appointment_time = form.cleaned_data["appointment_time"]
                     appointment_date = form.cleaned_data["appointment_date"]
-                    appoint_time = doc_appoint(doc, appointment_date)
+                    appoint_time = doc_appoint(doc, appointment_date) + patient_appoint(request.user.patient, appointment_date)
+                    print(f"appoint_time = {appoint_time}")
 
                     if appointment_time in appoint_time:
                         form.add_error('appointment_time', 'มีนัดแล้วในเวลานี้ กรุณาเลือกเวลาอื่น')
@@ -131,7 +137,7 @@ class AppointmentEditView(View):
 
         return render(request, 'appointment_edit.html', context)
     
-    def delete(self,request, user_id, app_id):
+    def delete(self, app_id):
         try:
             app = Appointment.objects.get(pk=app_id)
             app.delete()

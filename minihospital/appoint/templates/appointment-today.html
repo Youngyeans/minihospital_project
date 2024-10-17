@@ -13,15 +13,17 @@
             <p class="text-[48px] font-semibold text-[#3E5279]">คิวพบแพทย์</p>
             <p class="text-[20px] text-[#494949] mb-[10px] ">วันที่ {{ today }}</p>
         </div>
-        <div class="flex space-x-5 justify-center items-center">
-            <div class="relative w-[400px]">
-                <input type="text" class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" placeholder="ค้นหา">
-                <img src="{% static 'image/magnifying-glass.png' %}" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-5 h-5">
+        <form method="GET">
+            <div class="flex space-x-5 justify-center items-center">
+                <div class="relative w-[400px]">
+                    <input type="text" name="search" class="duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]" placeholder="ค้นหา">
+                    <img src="{% static 'image/magnifying-glass.png' %}" class="absolute right-6 top-1/2 transform -translate-y-1/2 w-5 h-5">
+                </div>
+                <div id="search1" class="hover:from-[#15CDCB] hover:to-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] flex justify-center rounded-full items-center w-[100px] h-[35px] p-[2px]">
+                    <button type="submit" id="search2" class="text-[#494949]duration-300 transition ease-in-out delay-150 w-full h-full flex flex justify-center items-center bg-white px-7 py-2 text-center rounded-full text-[#494949] text-[16px]">ค้นหา</button>
+                </div>
             </div>
-            <div id="search1" class="hover:from-[#15CDCB] hover:to-[#15CDCB] duration-300 hover:scale-110 transition ease-in-out delay-150 bg-gradient-to-r from-[#5280e2] to-[#15cdcb] flex justify-center rounded-full items-center w-[100px] h-[35px] p-[2px]">
-                <button id="search2" class="text-[#494949]duration-300 transition ease-in-out delay-150 w-full h-full flex flex justify-center items-center bg-white px-7 py-2 text-center rounded-full text-[#494949] text-[16px]">ค้นหา</button>
-            </div>
-        </div>
+        </form>
     </div>
 
     <div class="container flex flex-col px-10 py-5">
@@ -109,12 +111,9 @@
                         </div>
                     </div>
                 {% endif %}
-                    
-            {% empty %}
-
-                    
-            
             {% endfor %}
+
+            
         </div>
 
         <div class="pagination m-20">
@@ -152,5 +151,4 @@
     </div>
 </div>
 
-<script src="{% static 'js/categories.js' %}"></script>
 {% endblock %}

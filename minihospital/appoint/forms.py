@@ -86,7 +86,7 @@ class AppointmentForm(ModelForm):
     )
 
     start_sympdate = forms.DateField(
-        input_formats=['%d/%m/%Y'],  # รองรับรูปแบบ dd/mm/yyyy
+        input_formats=['%d/%m/%Y'], 
         widget=TextInput(attrs={
             'id': 'sympDate',
             'class': 'duration-300 transition ease-in-out delay-150 text-[16px] w-full rounded-full bg-[#EFEFEF] text-[#494949] px-5 py-3 pr-14 focus:outline-none focus:border-[#15cdcb] focus:ring-2 focus:ring-[#15cdcb]',
@@ -119,11 +119,6 @@ class AppointmentForm(ModelForm):
                 'required': 'required',
             })
         }
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # ถ้ามีการส่งค่าจาก initial ให้ใช้เป็นค่าตั้งต้น
-    #     self.fields['appointment_date'].widget.attrs['value'] = self.initial.get('appointment_date', '')
 
     def clean(self):
         cleaned_data = super().clean()

@@ -281,13 +281,12 @@
             <script>
                 function togglePopup() {
                     const popup = document.getElementById('popup');
-                    popup.classList.toggle('hidden'); // ซ่อนหรือแสดง popup
+                    popup.classList.toggle('hidden');
                 }
             
-                // ผูก event กับปุ่ม "จองคิวพบแพทย์"
                 document.getElementById('validate').addEventListener('click', function(event) {
-                    event.preventDefault(); // ป้องกันการ submit ฟอร์มทันที
-                    togglePopup(); // แสดงหรือซ่อน pop-up
+                    event.preventDefault();
+                    togglePopup();
                 });
             </script>
         

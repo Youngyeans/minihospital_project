@@ -4,7 +4,7 @@ from datetime import timedelta, datetime, date
 from django import forms 
 from appoint.models import Appointment
 
-def doc_Schedule():
+def hos_Schedule():
     min = 10
     updated_times = []
     current_time = datetime.combine(date.today(), datetime.strptime("08:00", "%H:%M").time())
@@ -28,7 +28,7 @@ class AppointmentEditForm(ModelForm):
     )
 
     appointment_time = forms.ChoiceField(
-        choices=doc_Schedule(), 
+        choices=hos_Schedule(), 
         widget=forms.Select(attrs={
         'class': 'py-3 px-5 text-base font-normal bg-[#EFEFEF] rounded-full',
         'required': 'required',

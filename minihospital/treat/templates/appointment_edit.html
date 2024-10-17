@@ -198,16 +198,9 @@
             </div>
     {% endfor %}
     
-    <!-- Pop-up Container -->
+    <!-- หน้าแก้ไขนัด -->
     <form method="post">
         {% csrf_token %}
-        <!-- <div class="text-red-500 mb-4">
-            {{ form.nonfield_errors }}
-        </div> -->
-        
-        <!-- <div class="text-red-500 mb-4">
-            {{ form.errors }}
-        </div> -->
         <div id="popup" class="z-[101] fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div class="p-10 bg-white rounded-[20px] shadow relative px-12">
                 <div class="text-start text-[#3d5279] text-[32px] font-semibold">แก้ไขการนัดหมาย</div>
@@ -246,20 +239,20 @@
 
                     <script>
                         function deleteAppointment(user_id, app_id) {
-                            const csrfToken = '{{ csrf_token }}'; // Get CSRF token
+                            const csrfToken = '{{ csrf_token }}';
                             const url = `/hopelife/treatment/${user_id}/edit/${app_id}/`;
                     
                             fetch(url, {
                                 method: 'DELETE',
                                 headers: {
-                                    'X-CSRFToken': csrfToken, // Include CSRF token in header
+                                    'X-CSRFToken': csrfToken,
                                     'Content-Type': 'application/json'
                                 }
                             })
                             .then(response => {
                                 if (response.ok) {
                                     alert('นัดหมายถูกยกเลิกเรียบร้อยแล้ว');
-                                    window.location.href = `/hopelife/treatment/${user_id}/`; // Use template literals correctly
+                                    window.location.href = `/hopelife/treatment/${user_id}/`;
                                 } else {
                                     alert('ไม่สามารถยกเลิกนัดหมายได้');
                                 }
@@ -273,7 +266,7 @@
                     </button>
                 </div>
 
-                <!-- ปุ่มปิด pop-up -->
+
                 <a href="{% url 'treat:treatment-list' user.id %}">
                     <img onclick="togglePopup()" class="absolute top-3 right-3 w-10 h-10 cursor-pointer" src="{% static 'image/close.png' %}" />
                 </a>
